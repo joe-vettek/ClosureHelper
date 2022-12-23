@@ -133,6 +133,8 @@ public class Data {
                     if (data0.lastFreshTs > data0_back.lastFreshTs)
                     {
                         SimpleService.notifyUser(context,"已经仓库识别完成");
+                        ocrDetector.cancel();
+                        ocrDetector.purge();
                     }
 
                     Log.d(TAG, "run: 请求一次仓库");

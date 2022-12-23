@@ -84,9 +84,12 @@ public class MainActivity extends AppCompatActivity {
         Global.prepareBaseData(getApplicationContext());
         startService(1);
         // 如果为空，登录
-
         showAnnouncement();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         if (spTool.getToken(getApplicationContext()).isEmpty()) {
             Intent i = new Intent(this, LoginActivity.class);
             startActivity(i);
@@ -95,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
         else {
             clearAndLoad();
         }
-
     }
 
     private void showAnnouncement() {
