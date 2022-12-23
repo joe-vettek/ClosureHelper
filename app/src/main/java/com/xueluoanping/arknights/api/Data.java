@@ -7,6 +7,7 @@ import android.util.Log;
 import com.xueluoanping.arknights.global.Global;
 import com.xueluoanping.arknights.pro.HttpConnectionUtil;
 import com.xueluoanping.arknights.pro.SimpleTool;
+import com.xueluoanping.arknights.services.SimpleService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,6 +20,8 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Data {
     private static final String TAG = Data.class.getSimpleName();
@@ -116,9 +119,28 @@ public class Data {
     //         "data": null,
     //         "message": "请求成功，将开始识别仓库，请稍后.请勿滥用该API,谢谢"
     // }
-    public static boolean requestForOCR(Context context, Game.GameInfo info) throws IOException {
+    public static boolean requestForOCR(Context context,  final Game.GameInfo info) throws IOException {
         String urlStr = host.baseApi + "/Game/Ocr/" + info.account + "/" + info.platform;
         String GameJson = HttpConnectionUtil.post(urlStr,HttpConnectionUtil.emptyJsonObject, auth.getTokenMap(context));
+
+        Timer ocrDetector =new Timer();
+        ocrDetector.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    Data.AccountData data0 = getBasicInfo(context, info);
+                    Data.AccountData data0_back = new Data.AccountData(Data.getOldDataTable(context,info));
+                    if (data0.lastFreshTs > data0_back.lastFreshTs)
+                    {
+                        SimpleService.notifyUser(context,"已经仓库识别完成");
+                    }
+
+                    Log.d(TAG, "run: 请求一次仓库");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        },2*60*1000,2*60*1000);
         // 以后再处理报文
         return true;
     }
@@ -195,8 +217,8 @@ public class Data {
         return hour;
     }
 
-    public static JSONObject getOldDataTable(Context context) throws JSONException, IOException {
-        File file = new File(context.getExternalCacheDir().getAbsolutePath() + "/user/" + SimpleTool.getUUID(Global.getSelectedGame().toString()) + ".json");
+    public static JSONObject getOldDataTable(Context context,Game.GameInfo account) throws JSONException, IOException {
+        File file = new File(context.getExternalCacheDir().getAbsolutePath() + "/user/" + SimpleTool.getUUID(new Global.GlobalGameAccount(account).toString()) + ".json");
         int size = (int) file.length();
         if (size == 0) return HttpConnectionUtil.emptyJsonObject1;
         byte[] cbuf = new byte[size];

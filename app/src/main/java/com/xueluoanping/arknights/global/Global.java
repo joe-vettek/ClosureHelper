@@ -9,7 +9,6 @@ import com.xueluoanping.arknights.pro.spTool;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,6 +24,15 @@ public class Global {
     public static class GlobalGameAccount implements Serializable {
         public String account = emptyString;
         public int platform = Game.Platform_Unknown;
+
+        public GlobalGameAccount() {
+
+        }
+
+        public GlobalGameAccount(Game.GameInfo data0) {
+            this.account = data0.account;
+            this.platform = data0.platform;
+        }
 
         public boolean isEmpty() {
             return account.isEmpty();
@@ -91,6 +99,13 @@ public class Global {
             account.platform = this.platform;
             return account;
         }
+
+        public Game.GameInfo getSimpleGameInfo() {
+            Game.GameInfo info = new Game.GameInfo();
+            info.platform = this.platform;
+            info.account = this.account;
+            return info;
+        }
     }
 
     public static void prepareBaseData(Context context) {
@@ -148,7 +163,7 @@ public class Global {
         return list2;
     }
 
-    public static void updateGlobalGamesList(Context context, Game.GameInfo[] infoList,boolean needSync) {
+    public static void updateGlobalGamesList(Context context, Game.GameInfo[] infoList, boolean needSync) {
         gamesList.clear();
         for (Game.GameInfo info : infoList) {
             GlobalGameAccount account = new GlobalGameAccount();
@@ -168,14 +183,13 @@ public class Global {
         }
 
         // 更新数据库
-        if(needSync)
-        {
+        if (needSync) {
             spTool.saveGamesList(context);
             spTool.saveSelectedGame(context);
         }
     }
 
-    public static void updateGlobalGamesList(Context context, List<String> infoList,boolean needSync) {
+    public static void updateGlobalGamesList(Context context, List<String> infoList, boolean needSync) {
         ArrayList<Game.GameInfo> list = new ArrayList<>();
         for (String info : infoList) {
 
@@ -189,6 +203,6 @@ public class Global {
             }
 
         }
-        updateGlobalGamesList(context, list.toArray(new Game.GameInfo[0]),needSync);
+        updateGlobalGamesList(context, list.toArray(new Game.GameInfo[0]), needSync);
     }
 }

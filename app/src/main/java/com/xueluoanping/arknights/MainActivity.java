@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 .setIcon(R.mipmap.npc_007_closure)
                 .setTitle("平台公告")
                 .setMessage(R.string.AnnouncementText)
-                .setPositiveButton("确认", null);
+                .setPositiveButton("三秒后自动关闭", null);
 
         final AlertDialog dlg = dialogAnnouncementBuilder.create();
         dlg.show();
@@ -309,7 +309,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                     Data.AccountData data0 = Data.getBasicInfo(getApplicationContext(), game0);
-                    Data.AccountData data0_back = new Data.AccountData(Data.getOldDataTable(getApplicationContext()));
+                    Data.AccountData data0_back = new Data.AccountData(Data.getOldDataTable(getApplicationContext(),Global.getSelectedGame().getSimpleGameInfo()));
 
 
                     if (data0.inventory.length() < 50 && data0_back.inventory.length() > 50) {
@@ -330,6 +330,7 @@ public class MainActivity extends AppCompatActivity {
                         tip[0] = "已经为您请求了最新的仓库内容，请过一段时间再来看看吧~\n" +
                                 "点击确认查看上一次的统计结果";
                         Data.requestForOCR(getApplicationContext(), game0);
+
                     } else {
                         tip[0] = "已经请求过了最新的仓库内容，" + (int) ((1 - intervalTime) * 60) + "分钟内无法重复请求~\n" +
                                 "点击确认查看上一次的统计结果";

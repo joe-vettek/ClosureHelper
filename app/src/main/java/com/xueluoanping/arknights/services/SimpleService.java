@@ -123,4 +123,10 @@ public class SimpleService extends Service {
         int notificationId = 10;
         return builder;
     }
+
+    public static void notifyUser(Context context,String x) {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(10,
+                SimpleService.broadcastIntent(context, x).setAutoCancel(true).build());
+    }
 }
