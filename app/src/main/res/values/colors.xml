@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#212121</color>
+    <color name="colorPrimaryDark">#2F2F2F</color>
+    <color name="colorAccent">#F58B00</color>
+
+    <color name="colorHighLight">#8BB5F8</color>
+    <color name="colorHint">#9CA3AF</color>
+    <color name="colorText">#D4D4D4</color>
+
+    <color name="colorStatueNormal">#22C55E</color>
+    <color name="colorStatueApproval">#06D6A0</color>
+    <color name="colorWarning">#DC2828</color>
+
+    <color name="colorLoginOut">#4387F4</color>
+</resources>

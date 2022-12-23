@@ -1,0 +1,62 @@
+apply plugin: 'com.android.application'
+
+
+android {
+    compileSdkVersion 31
+    buildToolsVersion "30.0.3"
+    project.archivesBaseName = "ClosureHelper"
+
+    defaultConfig {
+        applicationId "com.xueluoanping.arknights"
+        minSdkVersion 26
+        targetSdkVersion 31
+        versionCode 1
+        versionName "1.16"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        archivesBaseName = "$project.archivesBaseName-v$versionCode($versionName)"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            versionNameSuffix "-R"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    aaptOptions {
+        noCompress "json"  //表示不让aapt压缩的文件后缀json
+    }
+
+
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
+
+    // https://mvnrepository.com/artifact/org.jsoup/jsoup
+    implementation group: 'org.jsoup', name: 'jsoup', version: '1.13.1'
+
+    //列表适配器
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4'
+
+    //悬浮菜单
+    implementation 'com.getbase:floatingactionbutton:1.10.1'
+
+    //    调色盘
+    implementation 'com.github.florent37:glidepalette:2.1.2'
+//    implementation  'com.github.bumptech.glide:glide:4.13.0'
+//    annotationProcessor  'com.github.bumptech.glide:glide:4.10.0'
+    implementation 'com.github.bumptech.glide:glide:4.6.1'
+}
