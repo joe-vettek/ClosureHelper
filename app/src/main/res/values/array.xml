@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="languages">
+        <item>娱乐</item>
+        <item>购物</item>
+    </string-array>
+
+    <string-array name="lrc_type">
+        <item>全部显示</item>
+        <item>显示翻译</item>
+        <item>显示罗马音</item>
+        <item>不显示其他歌词</item>
+    </string-array>
+
+    <string-array name="notification_style">
+        <item>默认风格</item>
+        <item>自定义风格</item>
+        <item>无风格</item>
+    </string-array>
+
+    <string-array name="platform">
+        <item>苹果</item>
+        <item>安卓</item>
+        <item>哔哩哔哩</item>
+    </string-array>
+</resources>

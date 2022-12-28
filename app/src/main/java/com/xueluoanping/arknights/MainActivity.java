@@ -8,10 +8,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,20 +30,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.BaseTarget;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.SizeReadyCallback;
 import com.bumptech.glide.request.transition.Transition;
 import com.xueluoanping.arknights.api.Data;
 import com.xueluoanping.arknights.api.Game;
 import com.xueluoanping.arknights.custom.Item.ItemModel;
 import com.xueluoanping.arknights.custom.Item.itemAdapterSpecial;
-import com.xueluoanping.arknights.custom.NoBitmapTransformation;
 import com.xueluoanping.arknights.global.Global;
+import com.xueluoanping.arknights.pages.AccountMangerActivty;
+import com.xueluoanping.arknights.pages.GameSettingsActivity;
 import com.xueluoanping.arknights.pages.LoginActivity;
+import com.xueluoanping.arknights.pages.SettingActivity;
 import com.xueluoanping.arknights.pages.WebActivity;
 import com.xueluoanping.arknights.pro.HttpConnectionUtil;
 import com.xueluoanping.arknights.pro.SimpleTool;
@@ -53,9 +54,7 @@ import org.json.JSONObject;
 
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -75,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<ItemModel> datas2 = new ArrayList<>();
 
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,13 +83,8 @@ public class MainActivity extends AppCompatActivity {
         bindComponents();
         Global.prepareBaseData(getApplicationContext());
         startService(1);
-        // 如果为空，登录
-        showAnnouncement();
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+        // 如果为空，登录
         if (spTool.getToken(getApplicationContext()).isEmpty()) {
             Intent i = new Intent(this, LoginActivity.class);
             startActivity(i);
@@ -98,6 +93,13 @@ public class MainActivity extends AppCompatActivity {
         else {
             clearAndLoad();
         }
+        // showAnnouncement();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
     }
 
     private void showAnnouncement() {
@@ -181,8 +183,9 @@ public class MainActivity extends AppCompatActivity {
                                                 toastInThread("正在访问可露希尔网页进行手动确认");
                                                 alertTextView("完成手动确认后请点击头像重新加载数据");
                                                 notifyUser("需要手动登录");
-                                                timer.cancel();
-                                                timer.purge();
+                                                // 之后回到正常登录流程
+                                                // timer.cancel();
+                                                // timer.purge();
                                                 Intent ii = new Intent(getApplicationContext(), WebActivity.class);
                                                 startActivity(ii);
                                             }
@@ -191,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
                                             e.printStackTrace();
                                         }
                                     }
-                                }, 8000, 5000);
+                                }, 30000, 1000*180);
 
                             } else
                                 toastInThread("请访问可露希尔工作室进行检查或者更换网络！");
@@ -208,29 +211,50 @@ public class MainActivity extends AppCompatActivity {
                         s += "【" + Game.getPlatform(account.platform) + "】";
                         s += SimpleTool.protectTelephoneNum(account.account);
                         if (account.equals(Global.getSelectedGame()))
-                            s += "（当前选择）";
+                            s += "（点击调整）";
+                        else s += "（点击切换）";
                         items.add(s);
                     }
 
+                    items.add("• 账户管理面板");
+                    items.add("• 设置");
 
                     String[] itemArray = items.toArray(new String[0]);
                     for (String s : itemArray) Log.d(TAG, "onClick: " + s);
 
                     AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
-                            .setTitle("切换账户")
+                            .setTitle("快捷设置")
                             .setIcon(R.mipmap.npc_007_closure)
                             .setItems(itemArray, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     String name = items.get(which);
                                     Log.d(TAG, "onClick: " + name);
-                                    if (!name.contains("当前选择")) {
-                                        if (which > 0)
-                                            Global.setSelectedGameAndSave(getApplicationContext(), Global.getGamesList().get(which - 1));
+
+                                    if (name.contains("重载")) {
                                         toastInThread("重新加载！");
-                                        needLogin = false;
+                                        // needLogin = false;
                                         clearAndLoad();
+                                    } else if (name.contains("账户")) {
+                                        Intent i1 = new Intent(MainActivity.this, AccountMangerActivty.class);
+                                        startActivity(i1);
+                                    } else if (name.contains("设置")) {
+                                        Intent i1 = new Intent(MainActivity.this, SettingActivity.class);
+                                        startActivity(i1);
+                                    } else {
+                                        if (!name.contains("点击调整")) {
+                                            // if (which > 0)
+                                            Global.setSelectedGameAndSave(getApplicationContext(), Global.getGamesList().get(which - 1));
+                                            toastInThread("重新加载！");
+                                            // needLogin = false;
+                                            clearAndLoad();
+                                        } else {
+                                            Intent i = new Intent(MainActivity.this, GameSettingsActivity.class);
+
+                                            startActivity(i);
+                                        }
                                     }
+
                                 }
                             }).create();
                     dialog.show();
@@ -296,27 +320,37 @@ public class MainActivity extends AppCompatActivity {
                     }
                     Game.GameInfo game0 = Global.getSelectedGame().isInList2(games);
 
-                    JSONObject stageJsonObject = Data.getStageTable(getApplicationContext()).getJSONObject(game0.battleMaps);
+                    JSONObject stageJsonObject = Data.getStageTable().getJSONObject(game0.battleMaps);
                     String main = "状态：" + game0.status
                             + "\n战斗地图：" + stageJsonObject.getString("code") + "(" + stageJsonObject.getString("name") + ")";
 
                     // 只有运行状态才进行
                     if (game0.code != Game.WebGame_Status_Code_Running && game0.code != Game.WebGame_Status_Code_Loginning) {
-                        alertTextView(main + "\n\n如需要重启，可以点击头像尝试启动账户");
+
                         currentPlatform = game0.platform;
                         currentAccount = game0.account;
-                        needLogin = true;
+                        main = main.replace("状态：-\n", "状态：游戏未运行\n");
+                        if (spTool.getQuickLogin()) {
+                            alertTextView(main + "\n\n如需要重启，可以点击头像尝试启动账户");
+                            needLogin = true;
+
+                        } else {
+                            alertTextView(main + "\n\n点击头像获得更多信息");
+                        }
                         return;
                     }
 
 
                     Data.AccountData data0 = Data.getBasicInfo(getApplicationContext(), game0);
-                    Data.AccountData data0_back = new Data.AccountData(Data.getOldDataTable(getApplicationContext(),Global.getSelectedGame().getSimpleGameInfo()));
+                    Data.AccountData data0_back = new Data.AccountData(Data.getOldDataTable(getApplicationContext(), Global.getSelectedGame().getSimpleGameInfo()));
 
 
-                    if (data0.inventory.length() < 50 && data0_back.inventory.length() > 50) {
-                        data0.inventory = data0_back.inventory;
+
+                    if (data0.inventory.toString().equals(HttpConnectionUtil.emptyJsonObject1.toString())) {
+                        if (data0_back.inventory.length() > 50)
+                            data0.inventory = data0_back.inventory;
                     }
+                    // Log.d(TAG, "run: "+data0.inventory+firstLoginNeedAutoAskForOCR);
                     // 当前版本，物品栏的变动需要请求扫描
                     // 但是金币什么的更新是比较及时的
                     if (data0.lastFreshTs > data0_back.lastFreshTs)
@@ -326,19 +360,30 @@ public class MainActivity extends AppCompatActivity {
                     Data.saveOldDataTable(getApplicationContext(), data0);
 
 
-                    float intervalTime = Data.getDataIntervalTime(getApplicationContext(), data0, data0_back);
+                    // 这处理账户重启服务器仓库不保存的问题，这时候自动第一次申请识别仓库
+                    boolean firstLoginNeedAutoAskForOCR = false;
+                    float intervalTime = Data.getDataIntervalTime(getApplicationContext(),  data0_back);
+                    if(intervalTime>1){
+                        if (data0.inventory.toString().equals(HttpConnectionUtil.emptyJsonObject1.toString())) {
+                            firstLoginNeedAutoAskForOCR = true;
+                        }
+                    }
+                    Log.d(TAG, "run: "+firstLoginNeedAutoAskForOCR);
                     final String[] tip = new String[]{""};
-                    if (intervalTime > 1) {
-                        tip[0] = "已经为您请求了最新的仓库内容，请过一段时间再来看看吧~\n" +
-                                "点击确认查看上一次的统计结果";
-                        Data.requestForOCR(getApplicationContext(), game0);
+                    if (spTool.getAutoWarehouseIdentification() |  firstLoginNeedAutoAskForOCR) {
+                        if (intervalTime > 1) {
+                            tip[0] = "已经为您请求了最新的仓库内容，请过一段时间再来看看吧~\n";
+                            Log.d(TAG, "run: "+tip[0]);
+                            Data.requestForOCR(getApplicationContext(), game0);
 
+                        } else {
+                            tip[0] = "已经请求过了最新的仓库内容，" + (int) ((1 - intervalTime) * 60) + "分钟内无法重复请求~\n";
+                        }
                     } else {
-                        tip[0] = "已经请求过了最新的仓库内容，" + (int) ((1 - intervalTime) * 60) + "分钟内无法重复请求~\n" +
-                                "点击确认查看上一次的统计结果";
+
                     }
 
-                    String name = Data.getCharacterTable(getApplicationContext()).getJSONObject(data0.secretary).getString("name");
+                    String name = Data.getCharacterTable().getJSONObject(data0.secretary).getString("name");
                     String sss = "等级：" + data0.level
                             + "\n源石数量：" + data0.androidDiamond
                             + "\n合成玉数量：" + data0.diamondShard
@@ -347,10 +392,11 @@ public class MainActivity extends AppCompatActivity {
 
                     // Log.d(TAG, "run: "+Data.getStageTable(getApplicationContext()));
 
-                    JSONObject itemJsonObject = Data.getItemTable(getApplicationContext());
+                    JSONObject itemJsonObject = Data.getItemTable();
 
                     // 用于比对数额
                     Map<String, Integer> inventoryHistoryMap = new HashMap<>();
+                    // forEachRemaining只能用一次
                     data0.inventory.keys().forEachRemaining(key -> {
                         try {
                             int amount = data0.inventory.getInt(key);
@@ -367,6 +413,7 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     });
+                    // forEachRemaining只能用一次
                     data0_back.inventory.keys().forEachRemaining(key -> {
                         try {
                             int amount = data0_back.inventory.getInt(key);
@@ -390,9 +437,9 @@ public class MainActivity extends AppCompatActivity {
 
                     StringBuilder baseString = new StringBuilder();
                     if (gold_amount > 0)
-                        baseString.append(String.format(Locale.CHINA,"龙门币：%+d；  ", gold_amount));
+                        baseString.append(String.format(Locale.CHINA, "龙门币：%+d；  ", gold_amount));
                     if (shard_amount > 0)
-                        baseString.append(String.format(Locale.CHINA,"合成玉：%+d；  ", shard_amount));
+                        baseString.append(String.format(Locale.CHINA, "合成玉：%+d；  ", shard_amount));
 
                     // stringBuilder.append(baseString);
                     inventoryHistoryMap.forEach((key, amount) -> {
@@ -410,34 +457,39 @@ public class MainActivity extends AppCompatActivity {
 
                     String timeString1 = SimpleTool.getFormatDate(data0.lastFreshTs_Inventory, false);
                     String timeString0 = SimpleTool.getFormatDate(data0.lastFreshTs_Base, false);
-                    Log.d(TAG, "run: " + stringBuilder);
+                    // Log.d(TAG, "run: " + stringBuilder);
 
 
+                    String finalMain = main;
+                    boolean finalFirstLoginNeedAutoAskForOCR = firstLoginNeedAutoAskForOCR;
                     runOnUiThread(new Runnable() {
                         @SuppressLint("SetTextI18n")
                         @Override
                         public void run() {
                             // Context context=getApplicationContext();
                             // 注意getApplicationContext()获取的是应用，对话框必须指向activity
-                            new AlertDialog.Builder(MainActivity.this)
-                                    .setIcon(R.mipmap.npc_007_closure)
-                                    .setTitle("提示")
-                                    .setMessage(tip[0])
-                                    .setPositiveButton("确认", null)
-                                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                        @Override
-                                        public void onDismiss(DialogInterface dialogInterface) {
-                                            new AlertDialog.Builder(MainActivity.this)
-                                                    .setIcon(R.mipmap.npc_007_closure)
-                                                    .setTitle("统计结果")
-                                                    .setMessage("【截止到" + timeString0 + "这些资源发生了变化】\n"
-                                                            + baseString + "\n\n"
-                                                            + "【截止到" + timeString1 + "仓库发生了这些变化】\n"
-                                                            + stringBuilder)
-                                                    .setPositiveButton("确认", null).show();
-                                        }
-                                    })
-                                    .show();
+                            if (spTool.getAutoWarehouseIdentification() | finalFirstLoginNeedAutoAskForOCR) {
+                                SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+                                SpannableString sTip = new SpannableString(tip[0] + "\n\n");
+                                ForegroundColorSpan colorSpan0 = new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark, null));
+                                sTip.setSpan(colorSpan0, 0, sTip.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+                                spannableStringBuilder.append(sTip);
+                                SpannableString t1 = new SpannableString("【截止到" + timeString0 + "这些资源发生了变化】\n");
+                                ForegroundColorSpan colorSpant1 = new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark, null));
+                                sTip.setSpan(colorSpant1, 0, t1.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+                                spannableStringBuilder.append(t1).append(String.valueOf(baseString)).append("\n\n");
+                                SpannableString t2 = new SpannableString("【截止到" + timeString1 + "仓库发生了这些变化】\n");
+                                ForegroundColorSpan colorSpant2 = new ForegroundColorSpan(getResources().getColor(R.color.colorPrimaryDark, null));
+                                sTip.setSpan(colorSpant2, 0, t2.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+                                spannableStringBuilder.append(t2).append(String.valueOf(stringBuilder)).append("\n\n");
+
+                                new AlertDialog.Builder(MainActivity.this)
+                                        .setIcon(R.mipmap.npc_007_closure)
+                                        .setTitle("提示")
+                                        .setMessage(spannableStringBuilder)
+                                        .setPositiveButton("确认", null)
+                                        .show();
+                            }
                             // RoundedCorners roundedCorners = new RoundedCorners(20);//圆角为5
 
                             String secretarySkinIdDec = data0.secretarySkinId.replaceAll("[@#]", "_");
@@ -458,11 +510,15 @@ public class MainActivity extends AppCompatActivity {
                                                     .into(imageView);
                                         }
                                     });
-                            textView.setText(main + "\n\n" + sss);
+                            textView.setText(finalMain + "\n\n" + sss);
 
-                            List<List<ItemModel>> lists = SimpleTool.splitList(datas, datas.size() / 2 + 1);
-                            datas = new ArrayList<>(lists.get(0));
-                            datas2 = new ArrayList<>(lists.get(1));
+                            if (datas.size() > 8) {
+                                List<List<ItemModel>> lists = SimpleTool.splitList(datas, datas.size() / 2 + 1);
+                                datas = new ArrayList<>(lists.get(0));
+                                datas2 = new ArrayList<>(lists.get(1));
+
+
+                            }
                             loadData();
                         }
                     });
@@ -471,10 +527,10 @@ public class MainActivity extends AppCompatActivity {
                     ex.printStackTrace();
                     toastInThread("网络有误，访问失败！");
                     notifyUser("无法连接上");
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
-                    toastInThread("正在维护");
-                    notifyUser("正在维护");
+                    // toastInThread("正在维护");
+                    // notifyUser("正在维护");
                 }
             }
         }).start();

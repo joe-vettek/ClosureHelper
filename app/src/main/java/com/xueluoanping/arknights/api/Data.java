@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
+import com.xueluoanping.arknights.SimpleApplication;
 import com.xueluoanping.arknights.global.Global;
 import com.xueluoanping.arknights.pro.HttpConnectionUtil;
 import com.xueluoanping.arknights.pro.SimpleTool;
@@ -37,6 +38,9 @@ public class Data {
     //     https://github.com/Kengxxiao/ArknightsGameData/raw/master/en_US/gamedata/excel/data_version.txt
     //    游戏数据版本地址
 
+    // Czx
+    //         获取announcement还要authority
+    // @Czx https://ak.dzp.me/ann.json
 
     // https://api.arknights.host/Game/11/1
     public static class AccountData implements Serializable {
@@ -72,14 +76,15 @@ public class Data {
             try {
                 this.inventory = status.getJSONObject("inventory");
             } catch (Exception e) {
-                e.printStackTrace();
+                // e.printStackTrace();
+                Log.d(TAG, "AccountData: 玩家容器为空");
             }
 
             try {
                 this.lastFreshTs_Inventory = status.getLong("lastFreshTs_Inventory");
                 this.lastFreshTs_Base = status.getLong("lastFreshTs_Base");
             } catch (Exception e) {
-                e.printStackTrace();
+                // e.printStackTrace();
             }
         }
 
@@ -142,14 +147,14 @@ public class Data {
                     e.printStackTrace();
                 }
             }
-        },2*60*1000,2*60*1000);
+        },5*60*1000,5*60*1000);
         // 以后再处理报文
         return true;
     }
 
     public static AccountData getBasicInfo(Context context, Game.GameInfo info) throws IOException, JSONException {
         String urlStr = host.baseApi + "/Game/" + info.account + "/" + info.platform;
-        String GameJson = HttpConnectionUtil.DownLoadTextPages(urlStr, auth.getTokenMap(context));
+        String GameJson = HttpConnectionUtil.DownLoadTextPages(urlStr, auth.getTokenMap(context),true);
 
         Log.d(TAG, "getBasicInfo: " + GameJson);
         JSONObject jsonObject = new JSONObject(GameJson).getJSONObject("data");
@@ -168,29 +173,34 @@ public class Data {
             data.lastFreshTs=jsonObject.getLong("lastFreshTs");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            Log.d(TAG, "getBasicInfo: 容器为空");
         }
         return data;
 
     }
 
-    public static JSONObject getCharacterTable(Context context) throws JSONException, IOException {
-        return getDataTable(context, "data/character_table.json");
+    public static JSONObject getCharacterTable() throws JSONException, IOException {
+        return getDataTable( "data/character_table.json");
     }
 
-    public static JSONObject getItemTable(Context context) throws JSONException, IOException {
-        return getDataTable(context, "data/item_table.json").getJSONObject("items");
+    public static JSONObject getItemTable() throws JSONException, IOException {
+        return getDataTable( "data/item_table.json").getJSONObject("items");
     }
 
-    public static JSONObject getStageTable(Context context) throws JSONException, IOException {
-        return getDataTable(context, "data/stage_table.json").getJSONObject("stages");
+    public static JSONObject getStageTable() throws JSONException, IOException {
+        return getDataTable("data/stage_table.json").getJSONObject("stages");
     }
 
-    public static JSONObject getDataTable(Context context, String name) throws JSONException, IOException {
-        int size = (int) context.getAssets().openFd(name).getLength();
+    public static JSONObject getDataTable(String name) throws JSONException, IOException {
+        // int size = (int) context.getAssets().openFd(name).getLength();
+        Context context=SimpleApplication.getContext();
+        File file = new File(context.getExternalCacheDir().getAbsolutePath()+"/" + name);
+        int size = (int) file.length();
         byte[] cbuf = new byte[size];
 
-        InputStream is = context.getAssets().open(name);
+        // InputStream is = context.getAssets().open(name);
+        InputStream is = new FileInputStream(file);
         int len = is.read(cbuf);
         String text = new String(cbuf, 0, len);
         JSONTokener tokener = new JSONTokener(text);
@@ -206,8 +216,8 @@ public class Data {
 
     @SuppressLint("DefaultLocale")
     // hour
-    public static float getDataIntervalTime(Context context,AccountData data0,AccountData data0_back) {
-        float interval = ((int) ((data0.lastFreshTs_Base - data0_back.lastFreshTs_Base)));
+    public static float getDataIntervalTime(Context context,AccountData data0_back) {
+        float interval = ((int) ((System.currentTimeMillis()- data0_back.lastFreshTs_Inventory)));
         Date date = new Date();
         date.setTime((long) interval);
         // Log.d(TAG, "getDataIntervalTime: " + String.format("%tT%n", date));

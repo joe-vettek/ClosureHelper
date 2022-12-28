@@ -8,10 +8,10 @@ android {
 
     defaultConfig {
         applicationId "com.xueluoanping.arknights"
-        minSdkVersion 26
+        minSdkVersion 24
         targetSdkVersion 31
         versionCode 1
-        versionName "1.16"
+        versionName "1.1.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         archivesBaseName = "$project.archivesBaseName-v$versionCode($versionName)"
     }
@@ -30,7 +30,7 @@ android {
     }
 
     aaptOptions {
-        noCompress "json"  //表示不让aapt压缩的文件后缀json
+        noCompress "json","txt"  //表示不让aapt压缩的文件后缀json
     }
 
 
@@ -39,6 +39,7 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'com.google.android.material:material:1.6.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -59,4 +60,7 @@ dependencies {
 //    implementation  'com.github.bumptech.glide:glide:4.13.0'
 //    annotationProcessor  'com.github.bumptech.glide:glide:4.10.0'
     implementation 'com.github.bumptech.glide:glide:4.6.1'
+
+    implementation 'com.google.code.gson:gson:2.8.4'
+
 }

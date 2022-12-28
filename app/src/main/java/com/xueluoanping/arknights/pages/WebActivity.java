@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.xueluoanping.arknights.R;
+import com.xueluoanping.arknights.api.host;
 import com.xueluoanping.arknights.pro.spTool;
 
 public class WebActivity extends AppCompatActivity {
@@ -69,12 +70,13 @@ public class WebActivity extends AppCompatActivity {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 WebView.HitTestResult hit = view.getHitTestResult();
                 //hit.getExtra()为null或者hit.getType() == 0都表示即将加载的URL会发生重定向，需要做拦截处理
-                if (hit.getExtra().isEmpty() || hit.getType() == 0) {
-                    //通过判断开头协议就可解决大部分重定向问题了，有另外的需求可以在此判断下操作
-                    Log.e("重定向", "重定向: " + hit.getType() + " && EXTRA（）" + hit.getExtra() + "------");
-                    Log.e("重定向", "GetURL: " + view.getUrl() + "\n" + "getOriginalUrl()" + view.getOriginalUrl());
-                    Log.d("重定向", "URL: " + request.getUrl().toString());
-                }
+                if (hit.getExtra() != null)
+                    if (hit.getExtra().isEmpty() || hit.getType() == 0) {
+                        //通过判断开头协议就可解决大部分重定向问题了，有另外的需求可以在此判断下操作
+                        Log.e("重定向", "重定向: " + hit.getType() + " && EXTRA（）" + hit.getExtra() + "------");
+                        Log.e("重定向", "GetURL: " + view.getUrl() + "\n" + "getOriginalUrl()" + view.getOriginalUrl());
+                        Log.d("重定向", "URL: " + request.getUrl().toString());
+                    }
 
                 Log.d(TAG, "shouldOverrideUrlLoading: " + request.getUrl());
                 if (request.getUrl().toString().startsWith("http://") || request.getUrl().toString().startsWith("https://")) { //加载的url是http/https协议地址
@@ -112,25 +114,26 @@ public class WebActivity extends AppCompatActivity {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 Log.d(TAG, "onPageFinished: " + url);
-                // if (url.contains("login")) {
-                //     try {
-                //         Thread.sleep(500);
-                //     } catch (InterruptedException e) {
-                //         e.printStackTrace();
-                //     }
-                //     if (view.getProgress() == 100 && !hasLoad) {
-                //         hasLoad = true;
-                //         String jsCode = getLoginJS();
-                //         view.evaluateJavascript(jsCode, new ValueCallback<String>() {
-                //             @Override
-                //             public void onReceiveValue(String value) {
-                //                 Log.d(TAG, "onReceiveValue: " + value);
-                //                 // 此处为JS返回的结果
-                //             }
-                //         });
-                //     }
-                //
-                // }
+                if (url.contains("login")) {
+
+                    if (view.getProgress() == 100 && !hasLoad) {
+                        hasLoad = true;
+                        String jsCode = getLoginJS();
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        view.evaluateJavascript(jsCode, new ValueCallback<String>() {
+                            @Override
+                            public void onReceiveValue(String value) {
+                                Log.d(TAG, "onReceiveValue: " + value);
+                                // 此处为JS返回的结果
+                            }
+                        });
+                    }
+
+                }
 
                 // else   if (url.contains("home"))
                 {
@@ -141,8 +144,12 @@ public class WebActivity extends AppCompatActivity {
             }
         });
 
-        webView.loadUrl("https://arknights.host/Auth/"+spTool.getToken(getApplicationContext()));
+        String url = host.baseApi + "/Auth/" + spTool.getToken(getApplicationContext());
+        Log.d(TAG, "onCreate: " + url);
+        // webView.loadUrl(url);
 
+        url = "https://arknights.host/login";
+        webView.loadUrl(url);
     }
 
     private String getLoginJS() {
@@ -151,14 +158,15 @@ public class WebActivity extends AppCompatActivity {
                 "document.getElementsByClassName('ark-input mb-2')[1].value='" + spTool.getPassword(getApplicationContext()) + "' \n" +
                 "document.getElementsByClassName('ark-input mb-2')[1].dispatchEvent(new Event('input')) \n" +
                 "document.getElementsByClassName('btn px-8 py-3 btn-block btn-info')[0].click() \n" +
+                // " window.open('https://arknights.host/home','_self') \n" +
                 "1111";
     }
 
     private String getHideJS() {
 
         return "document.getElementsByClassName('btn btn-circle btn-ghost')[0].style.display='none' \n"
-                +"document.getElementsByClassName('w-12 rounded-full')[0].style.display='none' \n"
-                +"document.getElementsByClassName('ark-card relative')[0].style.display='none' \n"
+                + "document.getElementsByClassName('w-12 rounded-full')[0].style.display='none' \n"
+                + "document.getElementsByClassName('ark-card relative')[0].style.display='none' \n"
                 // +"document.getElementsByClassName('text-lg mt-2')[0].style.display='none' \n"
                 + "document.getElementsByClassName('basis-full md:basis-1/3 md:mr-4 mb-4')[0].style.display='none' \n"
                 + "var a = document.createElement('span');\n" +

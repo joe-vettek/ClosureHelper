@@ -74,7 +74,7 @@ public class SimpleService extends Service {
                     }
                 }).start();
             }
-        }, 0, 1800000);
+        }, 0, 3600*1000);
         return START_STICKY;
     }
 

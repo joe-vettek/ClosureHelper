@@ -21,7 +21,7 @@ public class auth {
     public static void init(Context context) throws IOException, JSONException {
         String urlStr = host.baseApi + "/Auth/" + TransCoding.URlEncode(spTool.getUserName(context)) + "/" + TransCoding.URlEncode(spTool.getPassword(context));
         // Log.d(TAG, "init: " + urlStr);
-        String loginMessage = HttpConnectionUtil.DownLoadTextPages(urlStr, null);
+        String loginMessage = HttpConnectionUtil.DownLoadTextPages(urlStr, null,true);
         String token = HttpConnectionUtil.empty;
         boolean isAdmin = false;
         Log.d(TAG, "init: "+loginMessage);
@@ -29,8 +29,8 @@ public class auth {
         isAdmin = jsonObject.getBoolean("isAdmin");
         token = jsonObject.getString("token");
 
-        spTool.saveIsAdmin(context, isAdmin);
-        spTool.saveToken(context, token);
+        spTool.saveIsAdmin( isAdmin);
+        spTool.saveToken( token);
     }
 
 

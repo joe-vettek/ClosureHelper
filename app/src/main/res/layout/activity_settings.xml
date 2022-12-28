@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar_setting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/iv_back3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                app:srcCompat="?attr/actionModeCloseDrawable" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:text="设置"
+                android:textSize="20sp"
+                android:textStyle="bold">
+
+            </TextView>
+        </RelativeLayout>
+
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <View
+        android:id="@+id/tmp"
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:layout_below="@id/appbar_setting"
+        android:background="@color/r3" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tmp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+
+            <Switch
+                android:id="@+id/se_sw_autoWarehouseIdentification"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/setting_warehouseIdentification"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+
+            <Switch
+                android:id="@+id/se_sw_autoLogin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/setting_autoLogin"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/bt_updateDetect"
+            android:layout_width="140dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="110dp"
+            android:layout_marginEnd="110dp"
+            android:text="检测资源文件更新"
+            />
+
+
+        <!--        <View-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="1dp"-->
+        <!--            android:layout_marginLeft="20dp"-->
+        <!--            android:background="?android:attr/listDivider" />-->
+
+        <!--        <LinearLayout-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginLeft="20dp"-->
+        <!--            android:layout_marginTop="10dp"-->
+        <!--            android:layout_marginRight="20dp"-->
+        <!--            android:layout_marginBottom="10dp"-->
+        <!--            android:orientation="horizontal"-->
+        <!--            tools:ignore="UseSwitchCompatOrMaterialXml">-->
+
+        <!--            <TextView-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_weight="4"-->
+        <!--                android:text="选择歌词显示模式"-->
+        <!--                android:textColor="@color/menu_left_item_text_normal" />-->
+
+        <!--            <Spinner-->
+        <!--                android:id="@+id/spinner_lrcSelect"-->
+        <!--                android:layout_width="10dp"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_weight="4"-->
+        <!--                android:background="@null"-->
+        <!--                android:entries="@array/lrc_type"-->
+        <!--                android:gravity="end"-->
+        <!--                android:spinnerMode="dialog"-->
+        <!--                android:textAlignment="textEnd"-->
+        <!--                android:textColor="@color/text_main1" />-->
+
+        <!--        </LinearLayout>-->
+
+
+    </LinearLayout>
+</RelativeLayout>

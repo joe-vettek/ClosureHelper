@@ -54,9 +54,9 @@ public class LoginActivity extends AppCompatActivity {
             loginButton.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
-                    spTool.saveUserName(getApplicationContext(), userEditText.getText().toString());
+                    spTool.saveUserName( userEditText.getText().toString());
                     // 因为问题不大所以不做加密
-                    spTool.savePassword(getApplicationContext(), passwordEditText.getText().toString());
+                    spTool.savePassword( passwordEditText.getText().toString());
 
 
                     new Thread(new Runnable() {

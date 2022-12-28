@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/effect_ripple_round"
+    android:padding="10dp"
+    android:layout_marginTop="20dp"
+    android:orientation="vertical">
+<!--    <View-->
+<!--        android:id="@+id/tmp1"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="1dp"-->
+<!--        android:background="@color/r3" />-->
+    <ImageView
+        android:id="@+id/ic_iv_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="2dp"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="center_vertical"
+        android:scaleType="centerInside"
+        android:src="@mipmap/npc_007_closure"
+         />
+
+    <TextView
+        android:id="@+id/ic_tv_accountName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
+        android:textColor="@color/black_semi_transparent"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <View
+        android:id="@+id/tmp1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/ic_tv_accountName"
+        android:background="@color/r3" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/tmp1"
+        android:orientation="horizontal">
+        <View
+            android:layout_width="10dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/ic_bt_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="2"
+            android:text="@string/text_delete" />
+
+        <Switch
+            android:id="@+id/ic_sw_go"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:textAlignment="textEnd"
+            android:layout_gravity="center_vertical"
+            android:text="@string/text_start"
+            tools:ignore="RtlCompat" />
+
+        <View
+            android:layout_width="10dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+
+</RelativeLayout>
