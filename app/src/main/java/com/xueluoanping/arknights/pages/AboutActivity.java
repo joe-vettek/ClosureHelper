@@ -61,7 +61,7 @@ public class AboutActivity extends AppCompatActivity {
             });
             return mDrawable;
         };
-        String s = "\t\t<div>\n" +
+        String s = "<div>\n" +
                 "\t\t\t<h3>关于本APP的一些说明：</h3>\n" +
                 "\t\t\t<br>\n" +
                 "\t\t\t1.特别感谢<a href=\"https://arknights.host/\"><img src=\"https://ak.dzp.me/dst/avatar/ASSISTANT/npc_007_closure.webp\" alt=\"\" width=\"20\" height=\"20\">可露希尔工作室</a>和skd、<a\n" +
@@ -69,6 +69,8 @@ public class AboutActivity extends AppCompatActivity {
                 "\t\t\t\thref=\"https://prts.wiki/w/%E9%A6%96%E9%A1%B5\"><img src=\"https://prts.wiki/images/ak.png\" alt=\"\" width=\"20\" height=\"20\">PRTS Wiki</a>、<a\n" +
                 "\t\t\t\thref=\"https://penguin-stats.cn/?utm_source=penguin-stats&utm_medium=mirror-notification\"><img src=\"https://penguin.upyun.galvincdn.com/logos/penguin_stats_logo.png\" alt=\"\" width=\"20\" height=\"20\">企鹅物流</a>、<a\n" +
                 "\t\t\t\thref=\"https://monster-siren.hypergryph.com/music\"><img src=\"https://web.hycdn.cn/siren/site/manifest/icon_192.png\" alt=\"\" width=\"20\" height=\"20\">塞壬唱片</a>，感谢以上大佬们的API共享和资源开放；\n" +
+                "\t\t\t2.本APP源代码仓库地址：<a\n" +
+                "\t\t\t\thref=\"https://github.com/joe-vettek/ClosureHelper\"><img src=\"https://avatars.githubusercontent.com/u/82761814?v=4\" alt=\"\" width=\"20\" height=\"20\">https://github.com/joe-vettek/ClosureHelper</a>\n" +
                 "\t\t\t<br>\n" +
                 "\t\t\t<br>\n" +
                 "\t\t\t<h3>使用帮助：</h3>\n" +
