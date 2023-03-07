@@ -1,14 +1,14 @@
-package com.xueluoanping.arknights.api;
+package com.xueluoanping.arknights.api.main;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
 import com.xueluoanping.arknights.SimpleApplication;
+import com.xueluoanping.arknights.api.tool.ToolTime;
 import com.xueluoanping.arknights.global.Global;
 import com.xueluoanping.arknights.pro.HttpConnectionUtil;
 import com.xueluoanping.arknights.pro.SimpleTool;
-import com.xueluoanping.arknights.services.SimpleService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -55,66 +54,71 @@ public class Data {
         public long lastFreshTs=0;
         public long lastFreshTs_Inventory=0;
         public long lastFreshTs_Base=0;
+        public long lastApAddTime=0;
+        public int ap=0;
+        public int maxAp=0;
         public AccountData() {
         }
 
-        public AccountData(JSONObject status) {
-            try {
-                this.nickName = status.getString("nickName");
-                this.level = Integer.parseInt(status.getString("level"));
-                this.androidDiamond = Integer.parseInt(status.getString("androidDiamond"));
-                this.diamondShard = Integer.parseInt(status.getString("diamondShard"));
-                this.gold = Integer.parseInt(status.getString("gold"));
-                this.secretary = status.getString("secretary");
-                this.secretarySkinId = status.getString("secretarySkinId");
-                this.lastFreshTs = status.getLong("lastFreshTs");
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.d(TAG, "AccountData: "+status);
-            }
+        // public AccountData(JSONObject status) {
+        //     try {
+        //         this.nickName = status.getString("nickName");
+        //         this.level = Integer.parseInt(status.getString("level"));
+        //         this.androidDiamond = Integer.parseInt(status.getString("androidDiamond"));
+        //         this.diamondShard = Integer.parseInt(status.getString("diamondShard"));
+        //         this.gold = Integer.parseInt(status.getString("gold"));
+        //         this.secretary = status.getString("secretary");
+        //         this.secretarySkinId = status.getString("secretarySkinId");
+        //         this.lastFreshTs = status.getLong("lastFreshTs");
+        //         this.lastApAddTime=status.getLong("lastApAddTime")*1000L;
+        //     } catch (Exception e) {
+        //         e.printStackTrace();
+        //         Log.d(TAG, "AccountData: "+status);
+        //     }
+        //
+        //     try {
+        //         this.inventory = status.getJSONObject("inventory");
+        //     } catch (Exception e) {
+        //         // e.printStackTrace();
+        //         Log.d(TAG, "AccountData: 玩家容器为空");
+        //     }
+        //
+        //     try {
+        //         this.lastFreshTs_Inventory = status.getLong("lastFreshTs_Inventory");
+        //         this.lastFreshTs_Base = status.getLong("lastFreshTs_Base");
+        //     } catch (Exception e) {
+        //         // e.printStackTrace();
+        //     }
+        // }
 
-            try {
-                this.inventory = status.getJSONObject("inventory");
-            } catch (Exception e) {
-                // e.printStackTrace();
-                Log.d(TAG, "AccountData: 玩家容器为空");
-            }
-
-            try {
-                this.lastFreshTs_Inventory = status.getLong("lastFreshTs_Inventory");
-                this.lastFreshTs_Base = status.getLong("lastFreshTs_Base");
-            } catch (Exception e) {
-                // e.printStackTrace();
-            }
-        }
-
-        public JSONObject getJsonObject() {
-            JSONObject storageInventory = new JSONObject();
-            try {
-                storageInventory.put("nickName", nickName);
-                storageInventory.put("level", level);
-                storageInventory.put("androidDiamond", androidDiamond);
-                storageInventory.put("diamondShard", diamondShard);
-                storageInventory.put("gold", gold);
-                storageInventory.put("secretary", secretary);
-                storageInventory.put("secretarySkinId", secretarySkinId);
-                storageInventory.put("lastFreshTs", lastFreshTs);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                storageInventory.put("inventory", inventory);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                storageInventory.put("lastFreshTs_Inventory", lastFreshTs_Inventory);
-                storageInventory.put("lastFreshTs_Base", lastFreshTs_Base);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return storageInventory;
-        }
+        // public JSONObject getJsonObject() {
+        //     JSONObject storageInventory = new JSONObject();
+        //     try {
+        //         storageInventory.put("nickName", nickName);
+        //         storageInventory.put("level", level);
+        //         storageInventory.put("androidDiamond", androidDiamond);
+        //         storageInventory.put("diamondShard", diamondShard);
+        //         storageInventory.put("gold", gold);
+        //         storageInventory.put("secretary", secretary);
+        //         storageInventory.put("secretarySkinId", secretarySkinId);
+        //         storageInventory.put("lastFreshTs", lastFreshTs);
+        //         storageInventory.put("lastApAddTime", lastApAddTime);
+        //     } catch (Exception e) {
+        //         e.printStackTrace();
+        //     }
+        //     try {
+        //         storageInventory.put("inventory", inventory);
+        //     } catch (Exception e) {
+        //         e.printStackTrace();
+        //     }
+        //     try {
+        //         storageInventory.put("lastFreshTs_Inventory", lastFreshTs_Inventory);
+        //         storageInventory.put("lastFreshTs_Base", lastFreshTs_Base);
+        //     } catch (Exception e) {
+        //         e.printStackTrace();
+        //     }
+        //     return storageInventory;
+        // }
 
 
     }
@@ -125,7 +129,7 @@ public class Data {
     //         "message": "请求成功，将开始识别仓库，请稍后.请勿滥用该API,谢谢"
     // }
     public static boolean requestForOCR(Context context,  final Game.GameInfo info) throws IOException {
-        String urlStr = host.baseApi + "/Game/Ocr/" + info.account + "/" + info.platform;
+        String urlStr = host.getQuickestHost() + "/Game/Ocr/" + info.account + "/" + info.platform;
         String GameJson = HttpConnectionUtil.post(urlStr,HttpConnectionUtil.emptyJsonObject, auth.getTokenMap(context));
 
         Timer ocrDetector =new Timer();
@@ -133,11 +137,11 @@ public class Data {
             @Override
             public void run() {
                 try {
-                    Data.AccountData data0 = getBasicInfo(context, info);
-                    Data.AccountData data0_back = new Data.AccountData(Data.getOldDataTable(context,info));
-                    if (data0.lastFreshTs > data0_back.lastFreshTs)
+                    // Data.AccountData data0 = getBasicInfo(context, info);
+                    // Data.AccountData data0_back = new Data.AccountData(Data.getOldDataTable(context,info));
+                    // if (data0.lastFreshTs > data0_back.lastFreshTs)
                     {
-                        SimpleService.notifyUser(context,"已经仓库识别完成");
+                        // SimpleService.notifyUser(context,"已经仓库识别完成");
                         ocrDetector.cancel();
                         ocrDetector.purge();
                     }
@@ -153,7 +157,7 @@ public class Data {
     }
 
     public static AccountData getBasicInfo(Context context, Game.GameInfo info) throws IOException, JSONException {
-        String urlStr = host.baseApi + "/Game/" + info.account + "/" + info.platform;
+        String urlStr = host.getQuickestHost() + "/Game/" + info.account + "/" + info.platform;
         String GameJson = HttpConnectionUtil.DownLoadTextPages(urlStr, auth.getTokenMap(context),true);
 
         Log.d(TAG, "getBasicInfo: " + GameJson);
@@ -168,6 +172,9 @@ public class Data {
         data.gold = Integer.parseInt(status.getString("gold"));
         data.secretary = status.getString("secretary");
         data.secretarySkinId = status.getString("secretarySkinId");
+        data.lastApAddTime = status.getLong("lastApAddTime")*1000L;
+        data.ap = status.getInt("ap");
+        data.maxAp = status.getInt("maxAp");
         try {
             data.inventory = jsonObject.getJSONObject("inventory");
             data.lastFreshTs=jsonObject.getLong("lastFreshTs");
@@ -209,15 +216,15 @@ public class Data {
         return object;
     }
 
-    public static boolean saveOldDataTable(Context context, AccountData data) {
-        SimpleTool.saveTextFile(context, data.getJsonObject().toString(), "user/" + SimpleTool.getUUID(Global.getSelectedGame().toString()) + ".json");
-        return true;
-    }
+    // public static boolean saveOldDataTable(Context context, AccountData data) {
+    //     SimpleTool.saveTextFile(context, data.getJsonObject().toString(), "user/" + SimpleTool.getUUID(Global.getSelectedGame().toString()) + ".json");
+    //     return true;
+    // }
 
     @SuppressLint("DefaultLocale")
     // hour
     public static float getDataIntervalTime(Context context,AccountData data0_back) {
-        float interval = ((int) ((System.currentTimeMillis()- data0_back.lastFreshTs_Inventory)));
+        float interval = ((int) ((ToolTime.getTimeShanghai()- data0_back.lastFreshTs_Inventory)));
         Date date = new Date();
         date.setTime((long) interval);
         // Log.d(TAG, "getDataIntervalTime: " + String.format("%tT%n", date));

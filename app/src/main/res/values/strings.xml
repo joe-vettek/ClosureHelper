@@ -7,20 +7,18 @@
     <string name="passwordHintText">请输入密码</string>
     <string name="userNameHintText">邮箱</string>
     <string name="userAccountHintText">账户名</string>
-    <string name="timeoutText">加载中，第一次登录和需要重新加载时请点击屏幕右上角重载或重启app，其余情况请清理数据后重新登录。
-        点击小按钮可以选择账户</string>
+    <string name="timeoutText">
+        加载中，若第一次登录和需要重新加载请点击屏幕右上角重载或重启app，更换可露希尔账户请清理数据后重新登录。
+        点击小按钮可以选择账户或其他设置</string>
     <string name="rightText">本APP由可露希尔工作室提供API支持。</string>
-    <string name="AnnouncementText">
-衷心感谢老板【三天两觉】赞助的服务器
-\n本次活动机制下存在关卡死循环（敌人无限复活）情况
-\n请用户及时检查战斗托管情况。如仍长时间异常占用机器资源，平台将介入强制删除游戏账号</string>
+    <string name="AnnouncementText">衷心感谢老板【三天两觉】赞助的服务器。计划将执行数据库删档操作，请用户及时备份数据以防意外发生</string>
     <string name="gameSetting_changeShift">是否基建排版</string>
     <string name="gameSetting_recruitBot">忽略招募支援机械</string>
     <string name="gameSetting_hostBattle">是否托管战斗</string>
     <string name="gameSetting_saveAp">理智保留</string>
     <string name="gameSetting_saveTKT_RECRUIT">公招劵保留</string>
     <string name="bt_Submit">提交</string>
-    <string name="gameSetting_search">输入搜索关卡</string>
+    <string name="gameSetting_search">输入搜索关卡，支持关卡名、关卡id和掉落物</string>
     <string name="text_Search">查找</string>
     <string name="setting_warehouseIdentification">是否启动时自动申请仓库识别</string>
     <string name="setting_autoLogin">点击头像快速登录</string>
@@ -28,4 +26,21 @@
     <string name="text_delete">删除</string>
     <string name="text_start">启动</string>
     <string name="text_platform">游戏平台</string>
+
+
+    <string name="tab_text_1">顾曲</string>
+    <string name="tab_text_2">花笺</string>
+    <string name="tab_text_3">笔谈</string>
+    <string name="UpdateText">"1.重构了UI界面及部分代码架构；
+2.修复了一些错误显示和崩溃问题；
+3.新增切换主题功能，目前一共可以切换4个；
+4.新增Wiki和游戏快速访问以及重新登录入口；
+5.新增每日收益统计；
+6.新增随机音乐播放；
+7.更新了仓库展示方案；
+7.其他舒适度体验提高。"</string>
+    <string name="setting_startMusic">启动时播放音乐（消耗流量）</string>
+    <string name="about">加载中
+</string>
+    <string name="Text_ErrorNet">网络故障，<u>点击重试</u></string>
 </resources>

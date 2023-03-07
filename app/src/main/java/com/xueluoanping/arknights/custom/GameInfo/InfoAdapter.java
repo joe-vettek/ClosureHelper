@@ -25,14 +25,13 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
-import com.xueluoanping.arknights.MainActivity;
 import com.xueluoanping.arknights.R;
-import com.xueluoanping.arknights.api.Data;
-import com.xueluoanping.arknights.api.Game;
-import com.xueluoanping.arknights.custom.Item.ItemModel;
-import com.xueluoanping.arknights.global.Global;
-import com.xueluoanping.arknights.pages.AccountMangerActivty;
-import com.xueluoanping.arknights.pages.WebActivity;
+import com.xueluoanping.arknights.SimpleApplication;
+import com.xueluoanping.arknights.api.main.Data;
+import com.xueluoanping.arknights.api.main.Game;
+import com.xueluoanping.arknights.api.resource.dzp;
+import com.xueluoanping.arknights.api.tool.ToolTime;
+import com.xueluoanping.arknights.pages.CheckActivity;
 import com.xueluoanping.arknights.pro.SimpleTool;
 
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +39,6 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -58,6 +56,7 @@ public class InfoAdapter extends BaseQuickAdapter<Game.GameInfo, BaseViewHolder>
         Button bt = baseViewHolder.itemView.findViewById(R.id.ic_bt_delete);
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
 
+        // baseViewHolder.setTextColor(R.id.ic_bt_delete,)
         String l1 = Game.getPlatform(info.platform) + "：" + SimpleTool.protectTelephoneNum(info.account) + "\n";
         spannableStringBuilder.append(l1);
 
@@ -66,6 +65,8 @@ public class InfoAdapter extends BaseQuickAdapter<Game.GameInfo, BaseViewHolder>
         ForegroundColorSpan colorSpan0 = new ForegroundColorSpan(getContext().getColor(R.color.lightgreen));
         ForegroundColorSpan colorSpan1 = new ForegroundColorSpan(getContext().getColor(R.color.lightskyblue));
         ForegroundColorSpan colorSpan2 = new ForegroundColorSpan(getContext().getColor(R.color.crimson));
+
+        // 通过GameSetting才可以获取知道isPause
         switch (info.code) {
             case Game.WebGame_Status_Code_Running:
                 sTip.setSpan(colorSpan0, 0, sTip.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
@@ -74,6 +75,10 @@ public class InfoAdapter extends BaseQuickAdapter<Game.GameInfo, BaseViewHolder>
             case Game.WebGame_Status_Code_Loginning:
                 sw.setChecked(true);
                 sTip.setSpan(colorSpan1, 0, sTip.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+                break;
+            case Game.WebGame_Status_Code_ErrorGame:
+                sw.setChecked(true);
+                sTip.setSpan(colorSpan2, 0, sTip.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
                 break;
             default:
                 if (info.status.equals("-"))
@@ -86,29 +91,22 @@ public class InfoAdapter extends BaseQuickAdapter<Game.GameInfo, BaseViewHolder>
         baseViewHolder.setText(R.id.ic_tv_accountName, spannableStringBuilder);
 
         ImageView imageView = baseViewHolder.itemView.findViewById(R.id.ic_iv_icon);
-        try {
-            Data.AccountData data0_back = new Data.AccountData(Data.getOldDataTable(getContext(), info));
-            String secretarySkinIdDec = data0_back.secretarySkinId.replaceAll("[@#]", "_");
-            String PicUrl = "https://ak.dzp.me/dst/avatar/ASSISTANT/" + secretarySkinIdDec + ".webp";
-            final String PicUrl2 = PicUrl = "https://ak.dzp.me/dst/avatar/ASSISTANT/" + data0_back.secretary + ".webp";
-            RequestOptions options = RequestOptions.bitmapTransform(new CircleCrop());
-            Glide.with(getContext())
-                    .load(PicUrl)
-                    .apply(options)
-                    .into(new SimpleTarget<Drawable>() {
-                        @Override
-                        public void onResourceReady(@NonNull Drawable resource, @androidx.annotation.Nullable Transition<? super Drawable> transition) {
-                            if (resource.getBounds().width() > 5)
-                                imageView.setImageDrawable(resource);
-                            else Glide.with(getContext())
-                                    .load(PicUrl2)
-                                    .apply(options)
-                                    .into(imageView);
-                        }
-                    });
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-        }
+        // Data.AccountData data0_back = new Data.AccountData(Data.getOldDataTable(getContext(), info));
+
+        new Thread(() -> {
+            Data.AccountData data0_back = null;
+            try {
+                data0_back = Data.getBasicInfo(getContext(), info);
+            } catch (IOException | JSONException e) {
+                // e.printStackTrace();
+                Log.d(TAG, "run: getBasicInfo得不到进一步信息");
+            }
+            if (data0_back != null) {
+                dzp.loadImageIntoImageview(data0_back, (Activity) getContext(), imageView);
+
+            }
+        }).start();
+
 
         sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -123,79 +121,71 @@ public class InfoAdapter extends BaseQuickAdapter<Game.GameInfo, BaseViewHolder>
                             SimpleTool.toastInThread((Activity) getContext(), "尝试登录中");
                             info.status = "尝试登陆中";
                             info.code = Game.WebGame_Status_Code_Loginning;
-                            getData().set(baseViewHolder.getLayoutPosition(), info);
-                            ((Activity) getContext()).runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    notifyItemChanged(baseViewHolder.getLayoutPosition());
-                                }
+
+                            // getData().set(getData().indexOf(info), info);
+
+                            safeRunOnUiThread(() -> {
+                                notifyItemChanged(baseViewHolder.getLayoutPosition());
                             });
                             Timer timer = new Timer();
-                            long cacheTime = System.currentTimeMillis();
+                            long cacheTime =  ToolTime.getTimeShanghai();
                             timer.schedule(new TimerTask() {
 
                                 @Override
                                 public void run() {
 
                                     try {
-                                        Game.GameInfo[] infos = Game.getGameStatue(getContext());
-                                        for (int i = 0; i < infos.length; i++) {
-                                            if (info.account.equals(infos[i].account)
-                                                    && info.platform == infos[i].platform) {
-                                                int code = infos[i].code;
-                                                if (code == Game.WebGame_Status_Code_Running) {
-                                                    long nowTime = System.currentTimeMillis();
-                                                    double duration = (nowTime - cacheTime) / 1000.0d;
-                                                    Log.d(TAG, "run: " + "登录完成，共耗时" + duration + "s");
-                                                    SimpleTool.toastInThread((Activity) getContext(), "登录完成，共耗时" + duration + "s");
-                                                    synchronized (timer) {
-                                                        timer.cancel();
-                                                        timer.purge();
-                                                    }
+                                        Game.GameInfo info1 = info.getEqualNewInstance(Game.getGameStatue(getContext()));
 
-                                                    getData().set(baseViewHolder.getLayoutPosition(), infos[i]);
-                                                    ((Activity) getContext()).runOnUiThread(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            notifyItemChanged(baseViewHolder.getLayoutPosition());
-                                                        }
-                                                    });
-                                                }
-                                                else if (code != Game.WebGame_Status_Code_Loginning)
-                                                {
-                                                    synchronized (timer) {
-                                                        SimpleTool.toastInThread((Activity) getContext(), "正在访问可露希尔网页进行手动确认");
-                                                        // notifyUser("需要手动登录");
-                                                        // timer.cancel();
-                                                        // timer.purge();
-                                                        // 之后回到正常登录请求和刷新流程
-                                                        Intent ii = new Intent(getContext(), WebActivity.class);
-                                                        getContext().startActivity(ii);
-                                                    }
-                                                    getData().set(baseViewHolder.getLayoutPosition(), infos[i]);
-                                                    ((Activity) getContext()).runOnUiThread(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            notifyItemChanged(baseViewHolder.getLayoutPosition());
-                                                        }
-                                                    });
-                                                }
-                                                ((Activity) getContext()).runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        notifyItemChanged(baseViewHolder.getLayoutPosition());
-                                                    }
-                                                });
-                                                break;
+                                        int code = info1.code;
+                                        // if(code==Game.WebGame_Status_Code_ErrorLogin)
+                                        // {
+                                        //
+                                        // }else
+                                        if (code == Game.WebGame_Status_Code_Running) {
+                                            long nowTime =  ToolTime.getTimeShanghai();
+                                            double duration = (nowTime - cacheTime) / 1000.0d;
+                                            Log.d(TAG, "run: " + "登录完成，共耗时" + duration + "s");
+                                            SimpleTool.toastInThread((Activity) getContext(), "登录完成，共耗时" + duration + "s");
+                                            synchronized (timer) {
+                                                timer.cancel();
+                                                timer.purge();
                                             }
+
+                                            // setData(baseViewHolder.getLayoutPosition(), info1);
+                                        } else if (code == Game.WebGame_Status_Code_NeedCheck) {
+
+                                            SimpleTool.toastInThread((Activity) getContext(), "暂时请访问可露希尔网页进行手动确认，也可以通知开发者提供信息帮助完成这一功能");
+                                            SimpleTool.toastInThread((Activity) getContext(), "验证完成后请自行刷新。");
+                                            if (!info1.challenge.equals(info.challenge)) {
+                                                Intent ii = new Intent(getContext(), CheckActivity.class);
+                                                ii.putExtra("challenge", info1.challenge);
+                                                ii.putExtra("gt", info1.gt);
+                                                ii.putExtra("account", info1.account);
+                                                ii.putExtra("platform", info1.platform);
+                                                getContext().startActivity(ii);
+                                                synchronized (timer) {
+                                                    timer.cancel();
+                                                }
+                                            }
+
+
                                         }
-
-
+                                        // (code == Game.WebGame_Status_Code_Loginning)
+                                        // else {
+                                        //     setData(baseViewHolder.getLayoutPosition(), info1);
+                                        // }
+                                        setData(baseViewHolder.getLayoutPosition(), info1);
+                                        if (code == Game.WebGame_Status_Code_ErrorLogin || (info.code != info1.code && !info.status.equals(info1.status)))
+                                            safeRunOnUiThread(() -> {
+                                                notifyItemChanged(baseViewHolder.getLayoutPosition());
+                                                Log.d(TAG, "run: getGameStatue");
+                                            });
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
                                 }
-                            }, 30000, 1000*180);
+                            }, 5000, 5000);
 
                         }
                         // else
@@ -206,19 +196,15 @@ public class InfoAdapter extends BaseQuickAdapter<Game.GameInfo, BaseViewHolder>
                                 Game.GameSettings gameSettings = Game.getGameSettings(info);
                                 gameSettings.isStopped = true;
                                 if (Game.updateGameSettings(
-                                        Global.getSelectedGame().getSimpleGameInfo(), gameSettings)) {
+                                        info, gameSettings)) {
                                     SimpleTool.toastInThread((Activity) getContext(), "更新成功！");
                                     Game.GameInfo[] infos = Game.getGameStatue(getContext());
                                     for (int i = 0; i < infos.length; i++) {
                                         if (info.account.equals(infos[i].account)
                                                 && info.platform == infos[i].platform) {
-                                            getData().set(baseViewHolder.getLayoutPosition(), infos[i]);
-                                            ((Activity) getContext()).runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    notifyItemChanged(baseViewHolder.getLayoutPosition());
-                                                }
-                                            });
+                                            getData().set(i, infos[i]);
+                                            int finalI = i;
+                                            safeRunOnUiThread(() -> {notifyItemChanged(finalI);});
                                             break;
                                         }
                                     }
@@ -258,14 +244,14 @@ public class InfoAdapter extends BaseQuickAdapter<Game.GameInfo, BaseViewHolder>
                                     @Override
                                     public void run() {
                                         if (Game.TryDelete(info.account, info.platform)) {
-                                            ((Activity) getContext()).runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    getData().remove(baseViewHolder.getLayoutPosition());
-                                                    removeAt(baseViewHolder.getLayoutPosition());
-                                                    notifyItemChanged(baseViewHolder.getLayoutPosition());
-                                                    SimpleTool.toastInThread((Activity) getContext(), "删除成功");
-                                                }
+                                            safeRunOnUiThread(() -> {
+                                                getData().remove(baseViewHolder.getLayoutPosition());
+                                                removeAt(baseViewHolder.getLayoutPosition());
+                                                notifyItemChanged(baseViewHolder.getLayoutPosition());
+                                                SimpleTool.toastInThread((Activity) getContext(), "删除成功");
+
+                                                // 因为需要调整逻辑，所以暂时在此处插入重启
+                                                ((SimpleApplication) SimpleApplication.getContext()).restart();
                                             });
                                         } else
                                             SimpleTool.toastInThread((Activity) getContext(), "删除失败");
@@ -279,5 +265,13 @@ public class InfoAdapter extends BaseQuickAdapter<Game.GameInfo, BaseViewHolder>
             }
         });
 
+    }
+
+    private void safeRunOnUiThread(Runnable runnable) {
+        if (!((Activity) getContext()).isDestroyed()) {
+            ((Activity) getContext()).runOnUiThread(runnable);
+        } else {
+            Log.e(TAG, "safeRunOnUiThread: Try run ui Thread on a nonexistent Activity.\n" + runnable);
+        }
     }
 }

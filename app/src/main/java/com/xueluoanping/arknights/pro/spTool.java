@@ -3,11 +3,11 @@ package com.xueluoanping.arknights.pro;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.xueluoanping.arknights.R;
 import com.xueluoanping.arknights.SimpleApplication;
 import com.xueluoanping.arknights.global.Global;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.TreeSet;
 
 public class spTool {
@@ -16,6 +16,7 @@ public class spTool {
     private static final boolean defaultValue_Boolean = false;
     private static final String Pos_UserInfo = "User";
     private static final String Pos_AppSetting = "Setting";
+    private static final String Pos_App= "App";
     private static final String Key_UserName = "name";
     private static final String Key_Password = "password";
     private static final String Key_Token = "token";
@@ -24,6 +25,11 @@ public class spTool {
     private static final String Key_selectedGame = "selectedGame";
     private static final String Key_autoWarehouseIdentification = "autoWarehouseIdentification";
     private static final String Key_autoLogin = "autoLogin";
+    private static final String Key_startMusic = "startMusic";
+    private static final String Key_Theme = "styleName";
+    private static final String Key_LineSelect = "lineSelect";
+    private static final String Key_ResourceSelect = "resourceSelect";
+    private static final String Key_AppVersion = "version";
     public static String get(String location, String key, String defaultValue) {
         SharedPreferences sp = SimpleApplication.getContext().getSharedPreferences(location, Context.MODE_PRIVATE);
         return sp.getString(key, defaultValue);
@@ -32,6 +38,11 @@ public class spTool {
     public static boolean get(String location, String key, boolean defaultValue) {
         SharedPreferences sp = SimpleApplication.getContext().getSharedPreferences(location, Context.MODE_PRIVATE);
         return sp.getBoolean(key, defaultValue);
+    }
+
+    public static int get(String location, String key, int defaultValue) {
+        SharedPreferences sp = SimpleApplication.getContext().getSharedPreferences(location, Context.MODE_PRIVATE);
+        return sp.getInt(key, defaultValue);
     }
 
     public static void save(String location, String key, String value) {
@@ -45,6 +56,13 @@ public class spTool {
         SharedPreferences sp = SimpleApplication.getContext().getSharedPreferences(location, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = sp.edit();
         ed.putBoolean(key, value);
+        ed.apply();
+    }
+
+    public static void save(String location, String key, int value) {
+        SharedPreferences sp = SimpleApplication.getContext().getSharedPreferences(location, Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putInt(key, value);
         ed.apply();
     }
 
@@ -120,5 +138,40 @@ public class spTool {
         save(Pos_AppSetting, Key_autoLogin, token);
     }
 
+    public static boolean getStartMusic() {
+        return get(Pos_AppSetting, Key_startMusic, defaultValue_Boolean);
+    }
 
+
+    public static void saveStartMusic(Boolean token) {
+        save(Pos_AppSetting, Key_startMusic, token);
+    }
+
+    public static int getLineSelect() {
+        return get(Pos_AppSetting, Key_LineSelect, 0);
+    }
+    public static void setLineSelect(int token) {
+        save(Pos_AppSetting, Key_LineSelect, token);
+    }
+
+    public static int getResourceSelect() {
+        return get(Pos_AppSetting, Key_ResourceSelect, 0);
+    }
+    public static void setResourceSelect(int token) {
+        save(Pos_AppSetting, Key_ResourceSelect, token);
+    }
+
+    public static int getTheme() {
+        return get(Pos_AppSetting, Key_Theme, R.style.AppTheme_NoActionBar_AutumnDuck);
+    }
+    public static void setTheme(int token) {
+        save(Pos_AppSetting, Key_Theme, token);
+    }
+
+    public static String getVersion() {
+        return get(Pos_App, Key_AppVersion, defaultValue_String);
+    }
+    public static void setVersion(String token) {
+        save(Pos_App, Key_AppVersion, token);
+    }
 }

@@ -5,11 +5,42 @@
         <item>购物</item>
     </string-array>
 
-    <string-array name="lrc_type">
-        <item>全部显示</item>
-        <item>显示翻译</item>
-        <item>显示罗马音</item>
-        <item>不显示其他歌词</item>
+    <string-array name="line_type">
+        <item>默认线路</item>
+        <item>线路A</item>
+        <item>线路B</item>
+        <item>线路C</item>
+    </string-array>
+
+    <string-array name="resource_type">
+        <item>可露希尔工作室（国内推荐，标准内容）</item>
+        <item>kengxxiao的Github数据库（国内访问不稳定,扩展内容）</item>
+    </string-array>
+
+    <string-array name="music_type">
+        <item>视野 ♪ - 生命流</item>
+        <item>夜幕 ♪ - 如我所见</item>
+        <item>阴云 ♪ - Ghost Hunter</item>
+        <item>假日 ♪ - Ready？</item>
+        <item>商业 ♪ - City</item>
+        <item>严冬 ♪ - Loneliness</item>
+        <item>山岳 ♪ - 寻隐</item>
+        <item>秘海 ♪ - 暗潮</item>
+        <item>庆典 ♪ - 大柏墟</item>
+        <item>残垣 ♪ - 征兆</item>
+    </string-array>
+
+    <string-array name="music_type_id">
+        <item>232202</item>
+        <item>夜幕 ♪ - 如我所见</item>
+        <item>阴云 ♪ - Ghost Hunter</item>
+        <item>125019</item>
+        <item>商业 ♪ - City</item>
+        <item>严冬 ♪ - Loneliness</item>
+        <item>125094</item>
+        <item>秘海 ♪ - 暗潮</item>
+        <item>697667</item>
+        <item>048730</item>
     </string-array>
 
     <string-array name="notification_style">

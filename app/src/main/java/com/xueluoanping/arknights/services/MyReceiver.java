@@ -8,12 +8,11 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.xueluoanping.arknights.api.Game;
+import com.xueluoanping.arknights.api.main.Game;
 import com.xueluoanping.arknights.global.Global;
+import com.xueluoanping.arknights.pro.SimpleTool;
 
 import java.util.List;
-
-import static com.xueluoanping.arknights.services.SimpleService.broadcastIntent;
 
 /**
  * Created by xfkang on 2018/5/7.
@@ -34,17 +33,22 @@ public class MyReceiver extends BroadcastReceiver {
             @Override
             public void run() {
                 try {
-                    Game.GameInfo info= Global.getSelectedGame().isInList2(Game.getGameStatue(context));
-                    if (info==null)
-                        return;
-                    if (info.code != Game.WebGame_Status_Code_Running)
-                    {
-                        // Log.d(TAG, "run: 可露希尔未运行");
-                        notificationManager.notify(10, broadcastIntent(context,info.status).build());
+                    Game.GameInfo[] infos = Game.getGameStatue(context);
+                    for (int i = 0; i < infos.length; i++) {
+                        Game.GameInfo info = infos[i];
+                        if (info == null)
+                            return;
+                        if (info.code != Game.WebGame_Status_Code_Running) {
+                            // Log.d(TAG, "run: 可露希尔未运行");
+                            SimpleService.notifyUser(context, SimpleTool.protectTelephoneNum(info.account), info.status);
+
+                        }
                     }
+
+
                 } catch (Exception e) {
                     // Log.d(TAG, "run: 可露希尔未运行");
-                    notificationManager.notify(10, broadcastIntent(context,"网页连接异常").build());
+                    // SimpleService.notifyUser(context, "", "网页连接异常");
                     e.printStackTrace();
                 }
             }
@@ -74,7 +78,6 @@ public class MyReceiver extends BroadcastReceiver {
         Log.d("ActivityService isRun()", "com.ad 程序  ...isAppRunning......" + isAppRunning);
         return isAppRunning;
     }
-
 
 
 }

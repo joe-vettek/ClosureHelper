@@ -1,27 +1,22 @@
 package com.xueluoanping.arknights.pages;
 
-import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.xueluoanping.arknights.R;
-import com.xueluoanping.arknights.api.auth;
+import com.xueluoanping.arknights.api.main.auth;
+import com.xueluoanping.arknights.base.BaseActivity;
 import com.xueluoanping.arknights.pro.spTool;
 
-import org.json.JSONException;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
-
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity {
 
     private Button loginButton;
     private EditText userEditText;
@@ -43,17 +38,21 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.input_password);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+
     private void bindListeners() {
-        if (passwordEditText != null
-                && userEditText != null
-                && loginButton != null) {
+        // if (passwordEditText != null
+        //         && userEditText != null
+        //         && loginButton != null)
+        {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            // 隐藏软键盘
+            imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
             userEditText.setText(spTool.getUserName(getApplicationContext()));
             passwordEditText.setText(spTool.getPassword(getApplicationContext()));
-            loginButton.requestFocus();
-            loginButton.setOnTouchListener(new View.OnTouchListener() {
+            // loginButton.requestFocus();
+            loginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
+                public void onClick(View v) {
                     spTool.saveUserName( userEditText.getText().toString());
                     // 因为问题不大所以不做加密
                     spTool.savePassword( passwordEditText.getText().toString());
@@ -72,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                 });
 
-                            } catch (JSONException | IOException e) {
+                            } catch (Exception e) {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -83,9 +82,9 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         }
                     }).start();
-                    return true;
                 }
             });
+
 
         }
     }

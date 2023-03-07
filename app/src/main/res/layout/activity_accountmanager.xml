@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
     <Button
         android:id="@+id/bt_newAccount"
@@ -13,7 +12,8 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:text="@string/bt_Create"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        android:visibility="invisible" />
 
 
     <!--    别吧这个嵌套进去了，显示不全的-->
@@ -23,7 +23,23 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/bt_newAccount"
         android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp" />
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:visibility="invisible" />
+
+    <com.xueluoanping.arknights.internal.SplashView
+        android:id="@+id/ac_splash"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:layout_marginTop="100dp"
+        android:id="@+id/tv_errorNet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/Text_ErrorNet"
+        android:gravity="center"
+        android:autoLink="all"
+        android:visibility="invisible" />
 </RelativeLayout>

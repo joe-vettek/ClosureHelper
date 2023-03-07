@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark">
+    android:background="?attr/colorPrimaryDark">
 
 
     <LinearLayout
@@ -14,7 +14,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
-        android:background="@color/colorPrimary"
+        android:background="?attr/colorPrimary"
         android:orientation="vertical">
 
         <View
@@ -28,7 +28,7 @@
             android:gravity="center_horizontal"
             android:padding="10dp"
             android:text="@string/loginText"
-            android:textColor="@color/colorAccent"
+            android:textColor="?attr/colorAccent"
             android:textSize="48sp"
             android:textStyle="bold" />
 
@@ -40,7 +40,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginEnd="30dp"
             android:text="@string/user"
-            android:textColor="@color/colorAccent"
+            android:textColor="?attr/colorAccent"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -66,7 +66,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginEnd="30dp"
             android:text="@string/password"
-            android:textColor="@color/colorAccent"
+            android:textColor="?attr/colorAccent"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -101,7 +101,7 @@
             android:layout_marginStart="30dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="30dp"
-            android:background="@color/colorAccent"
+            android:background="?attr/colorAccent"
             android:clickable="true"
             android:text="@string/loginText"
             android:textStyle="bold" />
@@ -119,5 +119,5 @@
         android:layout_marginBottom="50dp"
         android:text="@string/rightText"
         android:textAlignment="center"
-        android:textColor="@color/colorAccent" />
+        android:textColor="?attr/colorAccent" />
 </RelativeLayout>

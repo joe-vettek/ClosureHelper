@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <application
         android:name=".SimpleApplication"
@@ -25,7 +27,8 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/AppTheme.NoActionBar.AutumnDuck"
+            android:alwaysRetainTaskState="true"
             android:usesCleartextTraffic="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,23 +38,43 @@
         <activity
             android:name=".pages.LoginActivity"
             android:exported="false"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar.AutumnDuck" />
+        <activity
+            android:name=".pages.WebActivity2"
+            android:exported="false"
+            android:theme="@style/AppTheme.NoActionBar.AutumnDuck" />
         <activity
             android:name=".pages.WebActivity"
             android:exported="false"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar.AutumnDuck" />
         <activity
             android:name=".pages.SettingActivity"
             android:exported="false"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar.AutumnDuck" />
         <activity
-            android:name=".pages.AccountMangerActivty"
+            android:name=".pages.AccountMangerActivity"
             android:exported="false"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar.AutumnDuck" />
         <activity
             android:name=".pages.GameSettingsActivity"
             android:exported="false"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar.AutumnDuck" />
+        <activity
+            android:name=".pages.CheckActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.NoActionBar.AutumnDuck" />
+        <activity
+            android:name=".pages.GalleyActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.NoActionBar.AutumnDuck" />
+        <activity
+            android:name=".pages.InventoryActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.NoActionBar.AutumnDuck" />
+        <activity
+            android:name=".pages.AboutActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.NoActionBar.AutumnDuck" />
         <receiver
             android:name=".services.MyReceiver"
             android:enabled="true"

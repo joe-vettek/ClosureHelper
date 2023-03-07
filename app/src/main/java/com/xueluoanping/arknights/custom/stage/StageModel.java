@@ -2,6 +2,7 @@ package com.xueluoanping.arknights.custom.stage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StageModel implements Serializable {
@@ -15,6 +16,10 @@ public class StageModel implements Serializable {
     private String diffGroup = "";
     public ArrayList<Reward> displayRewards = new ArrayList<>();
     private boolean isSelected = false;
+
+
+
+    private boolean isOpen = true;
 
     public String getCode() {
         return code;
@@ -80,6 +85,13 @@ public class StageModel implements Serializable {
         this.diffGroup = diffGroup;
     }
 
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public void setOpen(boolean open) {
+        isOpen = open;
+    }
 
     public boolean containsDrop(String regex) {
         AtomicBoolean result = new AtomicBoolean(false);
@@ -102,6 +114,7 @@ public class StageModel implements Serializable {
         private String itemId;
         private String name;
         private String iconId;
+        private String occPercent;
 
         public String getItemId() {
             return itemId;
@@ -127,6 +140,42 @@ public class StageModel implements Serializable {
             this.iconId = iconId;
         }
 
+        public String getOccPercent() {
+            return occPercent;
+        }
+
+        public void setOccPercent(int occPercent) {
+            switch (occPercent) {
+                case 0:
+                    this.occPercent = "固定掉落";
+                    break;
+                case 1:
+                    this.occPercent = "大概率";
+                    break;
+                case 2:
+                    this.occPercent = "概率掉落";
+                    break;
+                case 3:
+                    this.occPercent = "小概率";
+                    break;
+                case 4:
+                    this.occPercent = "罕见";
+                    break;
+                default:
+                    this.occPercent = "";
+                    break;
+            }
+        }
+
+        public void setOccPercent(String occPercent) {
+            this.occPercent = occPercent;
+        }
+
+        public void setOccPercent(String realOccPercent, int occPercent) {
+            if (!Objects.equals(realOccPercent, "")) {
+                setOccPercent(realOccPercent);
+            } else setOccPercent(occPercent);
+        }
     }
 
 

@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     >
 
     <LinearLayout
@@ -20,6 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/bt_Submit"
+            android:background="?android:attr/colorPrimary"
             android:textSize="24sp" />
 
         <LinearLayout
@@ -40,7 +40,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="number" />
+                android:inputType="number"
+                android:textColor="@color/colorText"/>
         </LinearLayout>
 
         <LinearLayout
@@ -61,7 +62,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="number" />
+                android:inputType="number"
+                android:textColor="@color/colorText"/>
         </LinearLayout>
 
         <Switch
@@ -69,6 +71,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="?attr/switchTextColorCustom"
             android:text="@string/gameSetting_recruitBot" />
 
         <Switch
@@ -76,6 +79,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="?attr/switchTextColorCustom"
             android:text="@string/gameSetting_hostBattle" />
 
         <Switch
@@ -83,6 +87,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="?attr/switchTextColorCustom"
             android:text="@string/gameSetting_changeShift" />
 
         <TextView
@@ -102,14 +107,17 @@
                 android:layout_width="296dp"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="@string/gameSetting_search" />
+                android:hint="@string/gameSetting_search"
+                android:singleLine="true"
+                android:textColor="@color/colorText"/>
 
             <Button
                 android:id="@+id/bt_search"
-                android:layout_width="0dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
+                android:background="?android:attr/colorPrimary"
                 android:text="@string/text_Search" />
         </LinearLayout>
 

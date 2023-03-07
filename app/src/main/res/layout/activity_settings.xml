@@ -71,6 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/setting_warehouseIdentification"
+                android:textColor="?attr/switchTextColorCustom"
                 tools:ignore="UseSwitchCompatOrMaterialXml" />
 
         </LinearLayout>
@@ -91,10 +92,91 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/setting_autoLogin"
+                android:textColor="?attr/switchTextColorCustom"
                 tools:ignore="UseSwitchCompatOrMaterialXml" />
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+
+            <Switch
+                android:id="@+id/se_sw_startMusic"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/setting_startMusic"
+                android:textColor="?attr/switchTextColorCustom"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal"
+            tools:ignore="UseSwitchCompatOrMaterialXml">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:text="选择网络路线"
+                android:textColor="?attr/switchTextColorCustom" />
+
+            <Spinner
+                android:id="@+id/sp_lineSelect"
+                android:layout_width="10dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:background="@null"
+                android:entries="@array/line_type"
+                android:gravity="end"
+                android:spinnerMode="dialog"
+                android:textAlignment="textEnd"
+                android:textColor="@color/text_main1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal"
+            tools:ignore="UseSwitchCompatOrMaterialXml">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:text="选择游戏资源数据更新来源"
+                android:textColor="?attr/switchTextColorCustom" />
+
+            <Spinner
+                android:id="@+id/sp_resourceSelect"
+                android:layout_width="10dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:background="@null"
+                android:entries="@array/resource_type"
+                android:gravity="end"
+                android:spinnerMode="dialog"
+                android:textAlignment="textEnd"
+                android:textColor="@color/text_main1" />
+        </LinearLayout>
         <Button
             android:id="@+id/bt_updateDetect"
             android:layout_width="140dp"
@@ -103,7 +185,8 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginStart="110dp"
             android:layout_marginEnd="110dp"
-            android:text="检测资源文件更新"
+            android:background="?android:attr/colorPrimary"
+            android:text="资源修复"
             />
 
 

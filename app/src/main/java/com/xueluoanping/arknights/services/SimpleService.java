@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -14,8 +15,8 @@ import androidx.core.app.NotificationCompat;
 
 import com.xueluoanping.arknights.MainActivity;
 import com.xueluoanping.arknights.R;
-import com.xueluoanping.arknights.api.Game;
-import com.xueluoanping.arknights.global.Global;
+import com.xueluoanping.arknights.api.main.Game;
+import com.xueluoanping.arknights.pro.SimpleTool;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -59,29 +60,35 @@ public class SimpleService extends Service {
                     @Override
                     public void run() {
                         try {
-                            Game.GameInfo info=Global.getSelectedGame().isInList2(Game.getGameStatue(getApplicationContext()));
-                            if (info==null)
-                                return;
-                            if (info.code != Game.WebGame_Status_Code_Running) {
-                                Log.d(TAG, "run: 可露希尔未运行");
-                                notificationManager.notify(10, broadcastIntent(getApplicationContext(), info.status).build());
+                            Game.GameInfo[] infos = Game.getGameStatue(getApplicationContext());
+                            for (int i = 0; i < infos.length; i++) {
+                                Game.GameInfo info = infos[i];
+                                if (info == null)
+                                    return;
+                                if (info.code != Game.WebGame_Status_Code_Running) {
+                                    // Log.d(TAG, "run: 可露希尔未运行");
+                                    notifyUser(getApplicationContext(), SimpleTool.protectTelephoneNum(info.account), info.status);
+                                    // notificationManager.notify(10, broadcastIntent(getApplicationContext(), SimpleTool.protectTelephoneNum(info.account),info.status).build());
+                                }
                             }
+
+
                         } catch (Exception e) {
-                            Log.d(TAG, "run: 可露希尔未运行");
-                            notificationManager.notify(10, broadcastIntent(getApplicationContext(), "网页连接异常").build());
-                            e.printStackTrace();
+                            Log.d(TAG, "run: 网络故障");
+                            // notifyUser(getApplicationContext(), "","网络连接故障");
+                            // e.printStackTrace();
                         }
                     }
                 }).start();
             }
-        }, 0, 3600*1000);
+        }, 0, 3600 * 1000);
         return START_STICKY;
     }
 
-    public static NotificationCompat.Builder broadcastIntent(Context context, String status) {
+    public static NotificationCompat.Builder broadcastIntent(Context context, String account, String status) {
 
-        if(status.equals("-"))
-            status="未运行";
+        if (status.equals("-"))
+            status = "未运行";
 
         //初始化通知管理器
         final String CHANNEL_ID = "channel_id_1";
@@ -93,7 +100,7 @@ public class SimpleService extends Service {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             //只在Android O之上需要渠道
             NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID,
-                    CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW);
+                    CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
             //如果这里用IMPORTANCE_NOENE就需要在系统的设置里面开启渠道，
             //通知才能正常弹出
             mNotificationManager.createNotificationChannel(notificationChannel);
@@ -110,23 +117,30 @@ public class SimpleService extends Service {
                 Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
 
         );
-        PendingIntent pendingIntent =
-                PendingIntent.getActivity(context, 0, launcher, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        // |PendingIntent.FLAG_IMMUTABLE必须使用，高版本要求，或者不可变
+        PendingIntent pendingIntent;
+        if (Build.VERSION.SDK_INT >= 31)
+            pendingIntent =
+                    PendingIntent.getActivity(context, 0, launcher, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        else pendingIntent =
+                PendingIntent.getActivity(context, 0, launcher, PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
 
         //PendingIntent.FLAG_UPDATE_CURREN
         builder
                 .setSmallIcon(R.mipmap.npc_007_closure)
                 .setContentTitle("可露希尔小助手")
-                .setContentText("您的可露希尔账户似乎" + status + "呢，请点击查看具体信息~")
+                .setContentText("您的游戏账户" + account + "似乎" + status + "呢，请点击查看具体信息~")
                 .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setContentIntent(pendingIntent);
+                .setContentIntent(pendingIntent)
+        ;
         int notificationId = 10;
         return builder;
     }
 
-    public static void notifyUser(Context context,String x) {
+    public static void notifyUser(Context context, String account, String x) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(10,
-                SimpleService.broadcastIntent(context, x).setAutoCancel(true).build());
+        notificationManager.notify(account.hashCode(),
+                SimpleService.broadcastIntent(context, account, x).setAutoCancel(true).build());
+
     }
 }

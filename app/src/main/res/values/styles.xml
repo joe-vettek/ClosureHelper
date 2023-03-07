@@ -5,15 +5,81 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="tabTextColorCustom">@color/colorNightBackground</item>
+        <item name="switchTextColorCustom">@color/colorNightBackground</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <!--        使用下面这个会导致一堆透明问题，请用代码设置标题栏颜色-->
+        <!--           android:fitsSystemWindows="true"需要配合这个属性使用-->
+        <!--        <item name="android:windowTranslucentStatus">true</item>-->
     </style>
+
+
+    <!--夜间主题-->
+    <style name="AppTheme.NoActionBar.nightTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/colorNightPrimary</item>
+        <item name="colorPrimaryDark">@color/colorNightPrimaryDark</item>
+        <item name="colorAccent">@color/colorNightAccent</item>
+        <item name="switchTextColorCustom">@color/colorNightAccent</item>
+        <item name="android:textColor">@color/colorNightAccent</item>
+        <item name="android:textColorHint">@color/colorNightAccentLight</item>
+        <item name="android:colorBackground">@color/colorNightBackground</item>
+        <item name="tabTextColorCustom">@color/colorNightAccent</item>
+        <item name="isLightTheme">false</item>
+    </style>
+
+    <!--小白鸭的秋天-->
+    <style name="AppTheme.NoActionBar.AutumnDuck">
+        <item name="colorPrimary">@color/colorPrimaryAutumnDuck</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkAutumnDuck</item>
+        <item name="colorAccent">@color/colorAccentAutumnDuck</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.FloatingGold">
+        <item name="colorPrimary">@color/colorPrimaryFloatingGold</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkFloatingGold</item>
+        <item name="colorAccent">@color/colorAccentFloatingGold</item>
+    </style>
+
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
+    <!--    menulabel的-->
+    <style name="menu_labels_style">
+        <item name="android:background">@drawable/fab_menu_label</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <!--    menulabel的-->
+    <style name="switchCustom" parent="TextAppearance.AppCompat.Widget.Switch">
+        <item name="android:textColor">@color/colorNightAccent</item>
+    </style>
+
+    <!--    spinner分割线-->
+    <style name="XSpinnerStyle" parent="android:Widget.ListView.DropDown">
+        <!-- 分隔线颜色 -->
+        <item name="android:divider">#DFDFDF</item>
+        <item name="android:dividerHeight">1dp</item>
+    </style>
+
+    <style name="ActivityEntryAnimation" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- 去除Activity顶部黑线 -->
+        <item name="android:windowContentOverlay">@null</item>
+        <!-- 系统状态栏背景设置透明 -->
+        <item name="android:windowDrawsSystemBarBackgrounds">@android:color/transparent</item>
+        <!-- Activity背景 -->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!-- 背景模糊 -->
+        <!--<item name="android:backgroundDimEnabled">true</item>-->
+    </style>
 
 </resources>

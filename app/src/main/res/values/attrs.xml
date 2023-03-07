@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="custom">
+        <attr name="tabTextColorCustom" format="color"/>
+        <attr name="switchTextColorCustom" format="color"/>
+    </declare-styleable>
+</resources>

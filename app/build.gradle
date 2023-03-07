@@ -2,25 +2,27 @@ apply plugin: 'com.android.application'
 
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 33
+    buildToolsVersion '33.0.1'
     project.archivesBaseName = "ClosureHelper"
+
 
     defaultConfig {
         applicationId "com.xueluoanping.arknights"
         minSdkVersion 24
-        targetSdkVersion 31
-        versionCode 1
-        versionName "1.1.4"
+        targetSdkVersion 33
+        versionCode=project.APPVersionCode
+        versionName=project.APPVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        archivesBaseName = "$project.archivesBaseName-v$versionCode($versionName)"
+
+        archivesBaseName = "${getMy(project.APPName)}-v$project.APPVersionName-${getMy(project.updateMessage)}"
+        versionNameSuffix APPVersionNameSuffix
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            versionNameSuffix "-R"
         }
     }
 
@@ -36,13 +38,22 @@ android {
 
 }
 
+def getMy( a) {
+    return new String(a.getBytes("iso8859-1"), "UTF-8")
+}
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.4.2'
-    implementation 'com.google.android.material:material:1.6.1'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+
+    // TabLayout 已从 ViewPager2 中分离出来
+    implementation 'com.google.android.material:material:1.6.1'
+
 
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
 
@@ -61,6 +72,12 @@ dependencies {
 //    annotationProcessor  'com.github.bumptech.glide:glide:4.10.0'
     implementation 'com.github.bumptech.glide:glide:4.6.1'
 
+//    Gson
     implementation 'com.google.code.gson:gson:2.8.4'
 
+    // geetest 验证API
+    implementation 'com.geetest.sensebot:sensebot:4.3.8.1'
+
+    // https://github.com/li-xiaojun/XPopup
+    implementation 'com.lxj:xpopup:1.6.7'
 }

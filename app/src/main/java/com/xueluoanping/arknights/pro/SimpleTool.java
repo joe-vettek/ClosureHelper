@@ -1,13 +1,23 @@
 package com.xueluoanping.arknights.pro;
 
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.xueluoanping.arknights.SimpleApplication;
-import com.xueluoanping.arknights.api.Game;
-import com.xueluoanping.arknights.global.Global;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,19 +27,18 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.math.BigDecimal;
+import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 public class SimpleTool {
+    private static final String TAG = SimpleTool.class.getSimpleName();
+
     /**
      * 按指定大小，分隔集合，将集合按规定的个数分为n个部分
      *
@@ -51,25 +60,6 @@ public class SimpleTool {
             result.add(subList);
         }
         return result;
-    }
-
-
-    public static void saveTextFile(Context context, String text, String name) {
-        try {
-            // 存在cache目录
-            File file = new File(context.getExternalCacheDir().getAbsolutePath() + "/" + name);
-            if (!file.exists()) {
-                File dir = new File(file.getParent());
-                dir.mkdirs();
-                file.createNewFile();
-            }
-            FileOutputStream outStream = new FileOutputStream(file);
-            outStream.write(text.getBytes());
-            outStream.close();
-            Log.e("save", file.getName() + ""+file.length());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 
@@ -112,7 +102,7 @@ public class SimpleTool {
         } catch (Exception e) {
             // e.printStackTrace();
         }
-       return "***";
+        return "***";
 
     }
 
@@ -120,16 +110,6 @@ public class SimpleTool {
         return UUID.nameUUIDFromBytes(s.getBytes());
     }
 
-    public static String getFormatDate(long lastFreshTs,boolean isUnix) {
-        int baseMultiplier=1;
-        if(isUnix)baseMultiplier=1000;
-        Date date = new Date(new BigDecimal(lastFreshTs).multiply(new BigDecimal(baseMultiplier)).longValue());
-        String MM = Integer.valueOf(String.format("%tm", date)).toString();
-        String dd = String.format(Locale.CHINA, "%td", date);
-        String HH = String.format("%tk", date);
-        String mm = String.format("%tM", date);
-        return String.format("%s月%s日%s时%s分", MM, dd, HH, mm);
-    }
 
     public static JSONObject getJson(String url) throws JSONException, IOException {
         File file = new File(url);
@@ -145,7 +125,7 @@ public class SimpleTool {
         return object;
     }
 
-    public static String getText(String url) throws  IOException {
+    public static String getText(String url) throws IOException {
         File file = new File(url);
         int size = (int) file.length();
         if (size == 0) return "";
@@ -155,21 +135,130 @@ public class SimpleTool {
         return new String(cbuf, 0, len);
     }
 
-    public static String getStringAssents(String name) throws  IOException {
-        Context context=SimpleApplication.getContext();
+    public static String getStringAssents(String name) throws IOException {
+        Context context = SimpleApplication.getContext();
         int size = (int) context.getAssets().openFd(name).getLength();
         byte[] cbuf = new byte[size];
         InputStream is = context.getAssets().open(name);
         int len = is.read(cbuf);
-        return  new String(cbuf, 0, len);
+        return new String(cbuf, 0, len);
     }
+
     // 需要是活动
     public static void toastInThread(Activity context, String s) {
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (context != null && !context.isDestroyed())
+            context.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
+                }
+            });
+        else Log.d(TAG, "toastInThread: 错误的活动指向" + context);
     }
+
+    public static boolean isTransparent(Bitmap bitmap) {
+        int color1 = bitmap.getPixel(0, 0);
+        int a1 = Color.alpha(color1);
+        int color2 = bitmap.getPixel(bitmap.getWidth() / 2, bitmap.getHeight() / 2);
+        int a2 = Color.alpha(color2);
+        if (a1 != 255 || a2 != 255) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean saveImageToGallery(Bitmap bmp, String name) {
+        try {
+            OutputStream out;
+            ContentResolver contentResolver = SimpleApplication.getContext().getContentResolver();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, name + ".png");
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf");
+            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+            Uri uri = contentResolver.insert(MediaStore.Files.getContentUri("external"), contentValues);
+            out = contentResolver.openOutputStream(uri);
+            out.write(bitmapToByte(bmp));
+            out.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static byte[] bitmapToByte(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Bitmap.CompressFormat format;
+        if (isTransparent(bitmap)) {
+            format = Bitmap.CompressFormat.PNG;
+        } else format = Bitmap.CompressFormat.JPEG;
+        bitmap.compress(format, 100, baos);
+        return baos.toByteArray();
+    }
+
+    public static List<Integer> getSignPoss(String aa, char string) {
+        List<Integer> bIntegers = new ArrayList<>();
+        char[] cs = aa.toCharArray();
+        for (int i = 0; i < cs.length; i++) {
+            if (cs[i] == string) {
+                bIntegers.add(i);
+            }
+        }
+        return bIntegers;
+    }
+
+    public static JsonObject getGsonObject(String gameJson) {
+        Gson g = new Gson();
+        return g.fromJson(gameJson, JsonObject.class);
+    }
+
+    public static Bitmap drawableToBitamp(Drawable drawable)
+    {
+        //声明将要创建的bitmap
+        Bitmap bitmap = null;
+        //获取图片宽度
+        int width = drawable.getIntrinsicWidth();
+        //获取图片高度
+        int height = drawable.getIntrinsicHeight();
+        //图片位深，PixelFormat.OPAQUE代表没有透明度，RGB_565就是没有透明度的位深，否则就用ARGB_8888。详细见下面图片编码知识。
+        Bitmap.Config config = drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
+        //创建一个空的Bitmap
+        bitmap = Bitmap.createBitmap(width,height,config);
+        //在bitmap上创建一个画布
+        Canvas canvas = new Canvas(bitmap);
+        //设置画布的范围
+        drawable.setBounds(0, 0, width, height);
+        //将drawable绘制在canvas上
+        drawable.draw(canvas);
+        return bitmap;
+    }
+    public static int getComplementaryColor(int colorToInvert) {
+        float[] hsv = new float[3];
+        Color.RGBToHSV(Color.red(colorToInvert), Color.green(colorToInvert),
+                Color.blue(colorToInvert), hsv);
+        hsv[0] = (hsv[0] + 180) % 360;
+        return Color.HSVToColor(hsv);
+    }
+
+    public static String getShortAmountDescriptionText(int amount) {
+        if(amount<100000)return amount+"";
+        else if(amount<100000000) return (amount/10000)+"万";
+        else return amount/100000000+"亿";
+    }
+
+    public static String getShorterAmountDescriptionText(int amount) {
+        if(amount<10000)return amount+"";
+        else if(amount<100000000) return (amount/10000)+"万";
+        else return amount/100000000+"亿";
+    }
+
+    public static String getShortestAmountDescriptionText(int amount) {
+        if(amount<1000)return amount+"";
+        else if(amount<10000) return (amount/1000)+"千";
+        else if(amount<100000000) return (amount/10000)+"万";
+        else return amount/100000000+"亿";
+    }
+
+
 }

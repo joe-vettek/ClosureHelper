@@ -1,6 +1,5 @@
 package com.xueluoanping.arknights.pages;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,10 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xueluoanping.arknights.R;
-import com.xueluoanping.arknights.api.Game;
+import com.xueluoanping.arknights.api.main.Game;
 import com.xueluoanping.arknights.custom.GameInfo.InfoAdapter;
-import com.xueluoanping.arknights.custom.stage.StageAdapter;
-import com.xueluoanping.arknights.custom.stage.StageModel;
 import com.xueluoanping.arknights.pro.SimpleTool;
 
 import org.json.JSONException;
@@ -29,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AccountMangerActivty extends AppCompatActivity {
+public class AccountMangerActivity extends AppCompatActivity {
     private Button bt_newAccount;
     private RecyclerView rc_accountList;
     private InfoAdapter ad_accountList;
@@ -40,12 +37,12 @@ public class AccountMangerActivty extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accountmanager);
+
         bindComponents();
         setListeners();
 
         getData();
         loadData();
-
     }
 
     private void getData() {
@@ -83,8 +80,8 @@ public class AccountMangerActivty extends AppCompatActivity {
             public void onClick(View view) {
                 if(infoList.size()<5)
                 {
-                    View root = LayoutInflater.from(AccountMangerActivty.this).inflate(R.layout.dg_addaccount, null);
-                    DialogInterface dialogInterface = new AlertDialog.Builder(AccountMangerActivty.this)
+                    View root = LayoutInflater.from(AccountMangerActivity.this).inflate(R.layout.dg_addaccount, null);
+                    DialogInterface dialogInterface = new AlertDialog.Builder(AccountMangerActivity.this)
                             .setView(root)
                             .setIcon(R.mipmap.npc_007_closure)
                             .setTitle("添加一个账户")
@@ -118,16 +115,16 @@ public class AccountMangerActivty extends AppCompatActivity {
                                                     dialogInterface.dismiss();
                                                 }
                                             });
-                                            SimpleTool.toastInThread(AccountMangerActivty.this, "添加成功");
+                                            SimpleTool.toastInThread(AccountMangerActivity.this, "添加成功");
 
                                         } catch (Exception e) {
                                             e.printStackTrace();
-                                            SimpleTool.toastInThread(AccountMangerActivty.this,"添加失败");
+                                            SimpleTool.toastInThread(AccountMangerActivity.this,"添加失败");
                                         }
 
 
                                     } else
-                                        SimpleTool.toastInThread(AccountMangerActivty.this, "账号密码或网络错误");
+                                        SimpleTool.toastInThread(AccountMangerActivity.this, "账号密码或网络错误");
                                 }
                             }).start();
                         }
@@ -140,7 +137,7 @@ public class AccountMangerActivty extends AppCompatActivity {
                     });
                 }
                 else {
-                    new AlertDialog.Builder(AccountMangerActivty.this)
+                    new AlertDialog.Builder(AccountMangerActivity.this)
                             .setIcon(R.mipmap.npc_007_closure)
                             .setTitle("警告")
                             .setMessage("最多创建五个用户")

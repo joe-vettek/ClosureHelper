@@ -3,7 +3,8 @@ package com.xueluoanping.arknights.global;
 import android.content.Context;
 import android.util.Log;
 
-import com.xueluoanping.arknights.api.Game;
+import com.xueluoanping.arknights.api.main.Game;
+import com.xueluoanping.arknights.api.main.auth;
 import com.xueluoanping.arknights.pro.SimpleTool;
 import com.xueluoanping.arknights.pro.spTool;
 
@@ -16,6 +17,9 @@ public class Global {
 
     private static final String emptyString = "";
     private static final String TAG = Global.class.getSimpleName();
+
+
+    public static boolean isCaptcha=false;
 
     private static ArrayList<GlobalGameAccount> gamesList = new ArrayList<>();
 
@@ -111,6 +115,17 @@ public class Global {
     public static void prepareBaseData(Context context) {
         loadGamesList(context);
         loadSelectedGame(context);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    auth.refresh();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     public static GlobalGameAccount getSelectedGame() {

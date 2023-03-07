@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/it"
+            android:icon="@android:drawable/ic_menu_edit"
+            android:title="访问 PRTS Wiki" />
+        <item
+            android:id="@+id/it_b"
+            android:icon="@android:drawable/ic_menu_edit"
+            android:title="访问 BWiki" />
+        <item
+            android:id="@+id/so"
+            android:icon="@android:drawable/ic_menu_sort_by_size"
+            android:title="启动明日方舟" />
+        <item
+            android:id="@+id/so_b"
+            android:icon="@android:drawable/ic_menu_sort_by_size"
+            android:title="启动明日方舟（b站）" />
+    </group>
+    <item android:title="More">
+        <menu>
+            <item
+                android:id="@+id/nav_importMusic"
+                android:icon="@android:drawable/ic_menu_add"
+                android:title="重新登录可露希尔账户" />
+            <item
+                android:id="@+id/nav_settings"
+                android:icon="@android:drawable/ic_menu_manage"
+                android:title="设置" />
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@android:drawable/ic_menu_info_details"
+                android:title="帮助" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="?attr/actionModeShareDrawable"
+                android:title="联系我们" />
+        </menu>
+    </item>
+</menu>

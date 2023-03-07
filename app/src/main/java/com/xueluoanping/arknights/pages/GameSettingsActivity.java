@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -15,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,25 +24,26 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.xueluoanping.arknights.R;
-import com.xueluoanping.arknights.api.Data;
-import com.xueluoanping.arknights.api.Game;
+import com.xueluoanping.arknights.api.main.Game;
+import com.xueluoanping.arknights.api.resource.Kengxxiao;
+import com.xueluoanping.arknights.api.resource.penguin_stats;
+import com.xueluoanping.arknights.api.tool.ToolTable;
+import com.xueluoanping.arknights.base.BaseActivity;
 import com.xueluoanping.arknights.custom.stage.StageAdapter;
 import com.xueluoanping.arknights.custom.stage.StageModel;
-import com.xueluoanping.arknights.global.Global;
 import com.xueluoanping.arknights.pro.SimpleTool;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class GameSettingsActivity extends AppCompatActivity {
+public class GameSettingsActivity extends BaseActivity {
 
     private static final String TAG = GameSettingsActivity.class.getSimpleName();
     private EditText et_ktkLimit;
@@ -57,13 +56,14 @@ public class GameSettingsActivity extends AppCompatActivity {
     private Button bt_submit;
     private RecyclerView rc_battleSelect;
     private StageAdapter ad_battleSelect;
-    private JsonElement stageTable = null;
-    private JSONObject itemTable = new JSONObject();
+    private JsonElement stageTable;
+    private JsonObject itemTable;
+    private List<StageModel> stagesListAll = new ArrayList<>();
     private List<StageModel> stagesList = new ArrayList<>();
     private List<String> stageStringsList;
     private Button bt_search;
-    private List<StageModel> stagesListAll = new ArrayList<>();
-    private Game.GameSettings oldSetting=new Game.GameSettings();
+    private Game.GameSettings oldSetting = new Game.GameSettings();
+    private Game.GameInfo gameInstanceInfo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,8 +100,17 @@ public class GameSettingsActivity extends AppCompatActivity {
                 }
                 stagesListAll.clear();
                 // forEachRemaining只能用一次
+                if (stageTable == null) {
+                    toastInThread("资源加载异常，请稍后重试或尝试修复！");
+                    ToolTable.initInstance();
+                    return;
+                }
                 Set<Map.Entry<String, JsonElement>> es = stageTable.getAsJsonObject().entrySet();
                 JsonObject jsonObject = stageTable.getAsJsonObject();
+
+                // 加载掉落统计
+                JsonArray jsonArray = ToolTable.getInstance().getMatrixTable();
+
                 es.forEach(key -> {
                     try {
                         JsonObject stageJsonObject = jsonObject.get(key.getKey()).getAsJsonObject();
@@ -109,23 +118,36 @@ public class GameSettingsActivity extends AppCompatActivity {
                         stageModel.setStageId(key.getKey().toString());
                         stageModel.setName0(stageJsonObject.get("name").getAsString());
                         stageModel.setCode(stageJsonObject.get("code").getAsString());
-                        stageModel.setDescription(stageJsonObject.get("description").getAsString());
+                        if (stageJsonObject.has("description"))
+                            stageModel.setDescription(stageJsonObject.get("description").getAsString());
                         stageModel.setDiffGroup(stageJsonObject.get("diffGroup").getAsString());
                         stageModel.setApCost(stageJsonObject.get("apCost").getAsInt());
-                        JsonArray drops = stageJsonObject.get("stageDropInfo").getAsJsonObject().get("displayRewards").getAsJsonArray();
+                        stageModel.setOpen(Kengxxiao.isStageOpen(key.getKey())!=0);
+                        JsonArray drops = stageJsonObject.get("stageDropInfo").getAsJsonObject().get("displayDetailRewards").getAsJsonArray();
                         for (int i = 0; i < drops.size(); i++) {
                             JsonObject drop = drops.get(i).getAsJsonObject();
-                            if (drop.get("dropType").getAsInt() == 2) {
-                                String id = drop.get("id").getAsString();
-                                if (itemTable.has(id)) {
-                                    String name = itemTable.getJSONObject(id).getString("name");
-                                    String iconId = itemTable.getJSONObject(id).getString("iconId");
-                                    StageModel.Reward stringStringEntry = new StageModel.Reward();
-                                    stringStringEntry.setItemId(id);
-                                    stringStringEntry.setName0(name);
-                                    stringStringEntry.setIconId(iconId);
-                                    stageModel.displayRewards.add(stringStringEntry);
+                            try {
+                                if (drop.get("dropType").getAsInt() == 2 || drop.get("dropType").getAsInt() == 3) {
+                                    String id = drop.get("id").getAsString();
+                                    if (itemTable.has(id)) {
+                                        String name = itemTable.get(id).getAsJsonObject().get("name").getAsString();
+                                        String iconId = itemTable.get(id).getAsJsonObject().get("iconId").getAsString();
+                                        int OccPercent = drop.get("occPercent").getAsInt();
+                                        StageModel.Reward stringStringEntry = new StageModel.Reward();
+                                        stringStringEntry.setItemId(id);
+                                        stringStringEntry.setName0(name);
+                                        stringStringEntry.setIconId(iconId);
+                                        if (jsonArray == null)
+                                            stringStringEntry.setOccPercent(OccPercent);
+                                        else {
+                                            stringStringEntry.setOccPercent(penguin_stats.getRealOccPercent(key.getKey(),id),OccPercent);
+                                        }
+
+                                        stageModel.displayRewards.add(stringStringEntry);
+                                    }
                                 }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
                         }
                         AtomicBoolean isSelected = new AtomicBoolean(false);
@@ -139,11 +161,11 @@ public class GameSettingsActivity extends AppCompatActivity {
                             stagesListAll.add(stageModel);
 
                     } catch (Exception e) {
-                        Log.d(TAG, "run: " + key.getKey());
+                        Log.d(TAG, "run: 关卡数据读取错误" + key.getKey());
                         e.printStackTrace();
                     }
                 });
-
+                Collections.reverse(stagesListAll);
                 Log.d(TAG, "initStageData: " + stagesListAll.size());
 
             }
@@ -157,26 +179,30 @@ public class GameSettingsActivity extends AppCompatActivity {
             public void run() {
                 try {
                     try {
-                        stageTable = new JsonParser().parse(Data.getStageTable().toString());
-                        itemTable = Data.getItemTable();
+                        stageTable = new JsonParser().parse(ToolTable.getInstance().getStageTable().toString());
+                        // itemTable = Data.getItemTable();
+                        itemTable = ToolTable.getInstance().getItemTable();
                         // initStageData();
-                    } catch (JSONException | IOException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     String url = getExternalCacheDir().getAbsolutePath()
-                            + "/user/" + SimpleTool.getUUID(Global.getSelectedGame().toString()) + "_Settings.json";
+                            + "/user/" + SimpleTool.getUUID(gameInstanceInfo.toString()) + "_Settings.json";
                     final Game.GameSettings[] gameSettings = new Game.GameSettings[]{new Game.GameSettings()};
                     try {
-                        gameSettings[0] = Game.getGameSettings(Global.getSelectedGame().getSimpleGameInfo());
+                        gameSettings[0] = Game.getGameSettings(gameInstanceInfo);
                     } catch (JSONException | IOException e) {
                         e.printStackTrace();
+                        toastInThread("网络异常或未启动托管！");
+                        runOnUiThread(() -> {finish();});
+                        // 后面这里好像暂时没用上，似乎是以前的可以离线时发送的写法
                         try {
                             gameSettings[0] = Game.getGameSettings_Json(SimpleTool.getJson(url));
                         } catch (JSONException | IOException ex) {
                             ex.printStackTrace();
                         }
                     }
-                    oldSetting=gameSettings[0];
+                    oldSetting = gameSettings[0];
                     final StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.append("当前战斗序列：");
 
@@ -250,15 +276,15 @@ public class GameSettingsActivity extends AppCompatActivity {
                 gameSettings.enableBuildingArrange = sw_changeShift.isChecked();
                 gameSettings.keepingAP = Integer.parseInt(et_apLimit.getText().toString());
                 gameSettings.recruitReserve = Integer.parseInt(et_ktkLimit.getText().toString());
-                gameSettings.battleMaps=stageStringsList;
-                gameSettings.isStopped=oldSetting.isStopped;
+                gameSettings.battleMaps = stageStringsList;
+                gameSettings.isStopped = oldSetting.isStopped;
 
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         try {
                             if (Game.updateGameSettings(
-                                    Global.getSelectedGame().getSimpleGameInfo(), gameSettings)) {
+                                    gameInstanceInfo, gameSettings)) {
                                 finish();
                                 toastInThread("更新成功！");
                             } else {
@@ -273,11 +299,29 @@ public class GameSettingsActivity extends AppCompatActivity {
 
             }
         });
+        bt_search.setOnLongClickListener((v -> {
+            hideInputMethod();
+            // 清空显示
+            tv_battleMaps.setText("当前战斗序列：");
+            et_search.setText("");
+            stagesList.clear();
+            ad_battleSelect.setList(stagesList);
+            ad_battleSelect.notifyDataSetChanged();
+            // 清空记录
+            stagesListAll.forEach(stageModel -> {
+                stageModel.setSelected(false);
+            });
+            stageStringsList.clear();
+            Toast.makeText(this, "已清空战斗序列", Toast.LENGTH_SHORT).show();
+            return true;
+        }));
         bt_search.setOnClickListener(new View.OnClickListener() {
             String cache = "***";
+            boolean hasHint = false;
 
             @Override
             public void onClick(View view) {
+
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 // 隐藏软键盘
                 imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
@@ -289,7 +333,14 @@ public class GameSettingsActivity extends AppCompatActivity {
                     // adapter.setList(datas);
                     stagesList.clear();
                     ad_battleSelect.setList(stagesList);
+                    toastInThread("请输入内容！");
                     return;
+                }
+                if (!hasHint) {
+                    // toastInThread("长按可以清空全部战斗序列！");
+                    hasHint = true;
+                } else {
+                    // toastInThread("正在查找！");
                 }
                 // 当字数在增加时避免重复搜索，增大压力
                 if (!regex.contains(cache) || stagesList.size() == 0) {
@@ -313,11 +364,13 @@ public class GameSettingsActivity extends AppCompatActivity {
                         result.add(s);
                     }
                 }
+
                 cache = regex;
                 Log.d(TAG, "onClick: " + result.size() + regex);
                 try {
                     // stagesList = SimpleTool.deepCopy(result);
                     stagesList.clear();
+
                     stagesList.addAll(result);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -358,6 +411,8 @@ public class GameSettingsActivity extends AppCompatActivity {
         ad_battleSelect = new StageAdapter(R.layout.ic_battle, stagesList);
         rc_battleSelect.setAdapter(ad_battleSelect);
 
+        //    加载用户实例数据
+        gameInstanceInfo = new Game.GameInfo().backupFromIntentBundle(getIntent());
     }
 
     public void toastInThread(String s) {

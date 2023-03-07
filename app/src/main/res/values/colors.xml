@@ -1,12 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#212121</color>
-    <color name="colorPrimaryDark">#2F2F2F</color>
-    <color name="colorAccent">#F58B00</color>
+    <color name="colorPrimary">#FAC6B1</color>
+    <color name="colorPrimaryDark">#A08DB4</color>
+    <color name="colorAccent">#FEA3B2</color>
+
+    <color name="colorNightPrimary">#94AC96</color>
+    <color name="colorNightPrimaryDark">#A16346</color>
+    <color name="colorNightAccent">#79716A</color>
+    <color name="colorNightAccentLight">#685e48</color>
+    <color name="colorNightBackground">#35333c</color>
+
+    <color name="colorPrimaryAutumnDuck">#82CBF8</color>
+    <color name="colorPrimaryDarkAutumnDuck">#E07953</color>
+    <color name="colorAccentAutumnDuck">#E7BF4B</color>
+
+    <color name="colorPrimaryFloatingGold">#C6D0DA</color>
+    <color name="colorPrimaryDarkFloatingGold">#9AA9D6</color>
+    <color name="colorAccentFloatingGold">#278CBC</color>
+
+
 
     <color name="colorHighLight">#8BB5F8</color>
     <color name="colorHint">#9CA3AF</color>
     <color name="colorText">#D4D4D4</color>
+
+
+
 
     <color name="colorStatueNormal">#22C55E</color>
     <color name="colorStatueApproval">#06D6A0</color>
@@ -54,6 +73,7 @@
     <color name="pink_pressed">#ec407a</color>
     <color name="blue_semi_transparent">#805677fc</color>
     <color name="blue_semi_transparent_pressed">#80738ffe</color>
+    <color name="transparent">#00ffffff</color>
 
     <!--    给fab控件设置的颜色-->
     <color name="fab_normal">#40E0D0</color>
@@ -224,4 +244,6 @@
     <color name="darkblue">#00008B</color> <!--暗蓝色 -->
     <color name="navy">#000080</color> <!--海军色 -->
     <!--    <color name="black">#000000</color> &lt;!&ndash;黑色 &ndash;&gt;-->
+
+    <color name="YUNSHUILAN">#baccd9</color><!--水云蓝 -->
 </resources>

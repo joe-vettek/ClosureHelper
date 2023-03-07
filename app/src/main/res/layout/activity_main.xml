@@ -1,71 +1,225 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nsv1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorPrimary">
+    android:layout_height="match_parent">
 
-
-
-    <TextView
-        android:id="@+id/textView12"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="120dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginStart="30dp"
-        android:textSize="18sp"
-        android:scrollbars="vertical"
-        android:focusable="true"
-        android:textIsSelectable="true"
-        android:textColor="@color/colorAccent"
-        android:textStyle="bold"
+        android:layout_height="match_parent">
 
-        android:text="@string/timeoutText" />
+        <LinearLayout
+            android:id="@+id/ll_tmp"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="?attr/colorPrimary"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp">
+
+            <ImageView
+                android:id="@+id/iv_gold"
+                android:layout_width="26dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                app:srcCompat="@mipmap/gold" />
+
+            <com.xueluoanping.arknights.internal.ScrollingTextView
+                android:id="@+id/t_gold"
+                android:layout_width="35dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:text="0"
+                android:textAlignment="textStart"
+
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                tools:ignore="RtlCompat" />
+
+            <ImageView
+                android:id="@+id/iv_diamond_shd"
+                android:layout_width="27dp"
+                android:layout_height="27dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                app:srcCompat="@mipmap/diamond_shd" />
+
+            <com.xueluoanping.arknights.internal.ScrollingTextView
+                android:id="@+id/t_diamond_shd"
+                android:layout_width="35dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:text="0"
+                android:textAlignment="textStart"
+
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                tools:ignore="RtlCompat" />
+
+            <ImageView
+                android:id="@+id/iv_diamond"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                app:srcCompat="@mipmap/diamond" />
+
+            <com.xueluoanping.arknights.internal.ScrollingTextView
+                android:id="@+id/t_diamond"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:text="0"
+                android:textAlignment="textStart"
+
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                tools:ignore="RtlCompat" />
+
+            <ImageView
+                android:id="@+id/iv_ap"
+                android:layout_width="30dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                app:srcCompat="@mipmap/ap" />
+            <com.xueluoanping.arknights.internal.ScrollingTextView
+                android:id="@+id/t_ap"
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:text="0/0"
+                android:singleLine="true"
+                android:textAlignment="textStart"
+
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                tools:ignore="RtlCompat" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/rll_tmp2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ll_tmp">
+
+            <TextView
+                android:id="@+id/textView12"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="80dp"
+                android:layout_marginBottom="20dp"
+                android:focusable="true"
+                android:scrollbars="vertical"
+                android:text="@string/timeoutText"
+                android:textColor="?android:attr/colorAccent"
+                android:textIsSelectable="true"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/iv_secretary"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:src="@mipmap/npc_001_doctor" />
+
+        </RelativeLayout>
 
 
-    <ImageView
-        android:id="@+id/iv_secretary"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="20dp"
-        android:layout_marginTop="10dp"
-        android:src="@mipmap/npc_001_doctor"
-        />
+        <com.xueluoanping.arknights.custom.NoLongClickCrashTextView
+            android:id="@+id/textView14"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rll_tmp2"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="20dp"
+            android:focusable="true"
+            android:scrollbars="vertical"
+            android:textColor="?android:attr/colorAccent"
+            android:textIsSelectable="true"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="20dp"
-        android:layout_below="@id/textView12"
-        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:id="@+id/rl_tmp1"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@id/textView14"
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/bt_inventory"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_gravity="center"
+                android:layout_marginStart="80dp"
+                android:layout_marginEnd="80dp"
+                android:background="@drawable/bg_ripple_round2"
+                android:text="仓库" />
+
+            <Button
+                android:id="@+id/bt_screenshot"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="center"
+                android:layout_marginStart="80dp"
+                android:layout_marginEnd="80dp"
+                android:background="@drawable/bg_ripple_round2"
+                android:text="截图" />
+        </RelativeLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:layout_weight="1"
-            android:id="@+id/itemList"
+            android:id="@+id/logList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rl_tmp1"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="20dp"
             android:focusable="true"
             android:longClickable="true"
             android:textAlignment="center"
             android:textColorHighlight="#CCCCCC"
             android:textIsSelectable="true" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_weight="1"
-            android:id="@+id/itemList2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="20dp"
-            android:focusable="true"
-            android:longClickable="true"
-            android:textAlignment="center"
-            android:textColorHighlight="#CCCCCC"
-            android:textIsSelectable="true" />
-    </LinearLayout>
 
-</RelativeLayout>
+
+
+    </RelativeLayout>
+
+</androidx.core.widget.NestedScrollView>

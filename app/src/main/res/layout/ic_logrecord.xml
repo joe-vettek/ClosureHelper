@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <View
+        android:layout_marginTop="2dp"
+        android:id="@+id/tmp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/YUNSHUILAN" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tmp"
+        android:padding="5dp"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:id="@+id/iv_ts"
+            android:layout_width="match_parent"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@color/colorText"
+            />
+
+        <TextView
+            android:id="@+id/tv_info"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="5dp"
+            android:paddingEnd="0dp"
+            android:gravity="center_vertical"
+            android:textColor="@color/colorText"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textIsSelectable="true"
+            />
+
+
+    </LinearLayout>
+
+</RelativeLayout>

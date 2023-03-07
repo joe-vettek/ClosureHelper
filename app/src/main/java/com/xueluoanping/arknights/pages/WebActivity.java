@@ -2,6 +2,7 @@ package com.xueluoanping.arknights.pages;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.os.Message;
@@ -23,7 +24,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.xueluoanping.arknights.R;
-import com.xueluoanping.arknights.api.host;
 import com.xueluoanping.arknights.pro.spTool;
 
 public class WebActivity extends AppCompatActivity {
@@ -38,6 +38,22 @@ public class WebActivity extends AppCompatActivity {
 
         initSetting();
 
+        setWebView();
+
+
+        // String url = host.baseApi + "/Auth/" + spTool.getToken(getApplicationContext());
+        // Log.d(TAG, "onCreate: " + url);
+        // webView.loadUrl(url);
+        //
+        String url = "https://arknights.host/login";
+        webView.loadUrl(url);
+
+        Uri uri = Uri.parse(url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
+    }
+
+    private void setWebView() {
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
@@ -143,13 +159,6 @@ public class WebActivity extends AppCompatActivity {
                 }
             }
         });
-
-        String url = host.baseApi + "/Auth/" + spTool.getToken(getApplicationContext());
-        Log.d(TAG, "onCreate: " + url);
-        // webView.loadUrl(url);
-
-        url = "https://arknights.host/login";
-        webView.loadUrl(url);
     }
 
     private String getLoginJS() {
