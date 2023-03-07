@@ -13,8 +13,10 @@
     </string-array>
 
     <string-array name="resource_type">
-        <item>可露希尔工作室（国内推荐，标准内容）</item>
-        <item>kengxxiao的Github数据库（国内访问不稳定,扩展内容）</item>
+        <item>可露希尔工作室（标准内容）</item>
+        <item>kengxxiao的Github数据库（扩展内容，直连）</item>
+        <item>kengxxiao的Github数据库（扩展内容，jsdelivr线路）</item>
+        <item>kengxxiao的Github数据库（扩展内容，fastgit线路）</item>
     </string-array>
 
     <string-array name="music_type">

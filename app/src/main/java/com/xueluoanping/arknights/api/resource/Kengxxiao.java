@@ -17,16 +17,23 @@ import java.io.File;
 
 public class Kengxxiao {
     private static final String TAG = Kengxxiao.class.getSimpleName();
+    final static String url1 = "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/";
+    final static String url2 = "https://gcore.jsdelivr.net/gh/Kengxxiao/ArknightsGameData@master/zh_CN/gamedata/excel/";
+    final static String url3 = "https://raw.fastgit.org/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/";
+    final static String[] urls = new String[]{"",url1, url2, url3};
 
+    public static String getKengxxiaoUrl(){
+        return urls[spTool.getResourceSelect()];
+    }
     // 注意这里采用了线程的手法，如果资源有变动，需要进行更新
     public static void checkforResource(Activity context) {
         switch (spTool.getResourceSelect()) {
             case 0:
                 new Thread(() -> {
-                    if (closure.checkUpdate()) closure.updateFromArknights(context,true);
+                    if (closure.checkUpdate()) closure.updateFromArknights(context, true);
                 }).start();
                 break;
-            case 1:
+            case 3:
                 new Thread(() -> {
                     try {
                         String base = context.getExternalCacheDir().getAbsolutePath() + "/";
@@ -37,7 +44,8 @@ public class Kengxxiao {
                                         .replace("VersionControl:", "")
                                         // split特殊字符要转义
                                         .split("\\."));
-                        String url = "https://gcore.jsdelivr.net/gh/Kengxxiao/ArknightsGameData@master/zh_CN/gamedata/excel/data_version.txt";
+                        String url = getKengxxiaoUrl()+"data_version.txt";
+
                         String vGitText = HttpConnectionUtil.DownLoadTextPages(url, null, false);
                         try {
                             Log.d(TAG, vText + "run: 更新检查" + vGitText);
@@ -100,9 +108,10 @@ public class Kengxxiao {
         String stageTableFileName = "data/stage_table.json";
         String characterTableFileName = "data/character_table.json";
         String itemNameTableFileName = "data/item_name_table.json";
-        String baseUrlRemote = "https://gcore.jsdelivr.net/gh/Kengxxiao/ArknightsGameData@master/zh_CN/gamedata/excel/";
+        String baseUrlRemote = getKengxxiaoUrl();
         // 用不了
-        // baseUrlRemote="https://raw.fastgit.org/gh/Kengxxiao/ArknightsGameData/zh_CN/gamedata/excel/";
+        // baseUrlRemote = "https://raw.fastgit.org/gh/Kengxxiao/ArknightsGameData/zh_CN/gamedata/excel/";
+        // baseUrlRemote = "https://raw.fastgit.org/gh/Kengxxiao/ArknightsGameData/zh_CN/gamedata/excel/";
         File file;
         SimpleTool.toastInThread(context, "正在更新物品清单！");
         file = new File(baseUrl + itemTableFileName);
