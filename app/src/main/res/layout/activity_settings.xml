@@ -148,6 +148,36 @@
                 android:textColor="@color/text_main1" />
         </LinearLayout>
 
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginLeft="20dp"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginRight="20dp"-->
+<!--            android:layout_marginBottom="10dp"-->
+<!--            android:orientation="horizontal"-->
+<!--            tools:ignore="UseSwitchCompatOrMaterialXml">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="4"-->
+<!--                android:text="选择数据源"-->
+<!--                android:textColor="?attr/switchTextColorCustom" />-->
+
+<!--            <Spinner-->
+<!--                android:id="@+id/sp_resourceSelect"-->
+<!--                android:layout_width="10dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="4"-->
+<!--                android:background="@null"-->
+<!--                android:entries="@array/resource_type"-->
+<!--                android:gravity="end"-->
+<!--                android:spinnerMode="dialog"-->
+<!--                android:textAlignment="textEnd"-->
+<!--                android:textColor="@color/text_main1" />-->
+<!--        </LinearLayout>-->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -162,16 +192,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
-                android:text="选择游戏资源数据更新来源"
+                android:text="设置场景音乐"
                 android:textColor="?attr/switchTextColorCustom" />
 
             <Spinner
-                android:id="@+id/sp_resourceSelect"
+                android:id="@+id/sp_musicSelect"
                 android:layout_width="10dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
                 android:background="@null"
-                android:entries="@array/resource_type"
+                android:entries="@array/music_type"
                 android:gravity="end"
                 android:spinnerMode="dialog"
                 android:textAlignment="textEnd"

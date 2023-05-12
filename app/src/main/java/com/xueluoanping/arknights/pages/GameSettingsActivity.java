@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +53,7 @@ public class GameSettingsActivity extends BaseActivity {
     private Switch sw_changeShift;
     private Switch sw_recruitBot;
     private Switch sw_hostBattle;
+    private Spinner sp_accelerateSlot_CN;
     private TextView tv_battleMaps;
     private Button bt_submit;
     private RecyclerView rc_battleSelect;
@@ -116,48 +118,61 @@ public class GameSettingsActivity extends BaseActivity {
                         JsonObject stageJsonObject = jsonObject.get(key.getKey()).getAsJsonObject();
                         StageModel stageModel = new StageModel();
                         stageModel.setStageId(key.getKey().toString());
+
                         stageModel.setName0(stageJsonObject.get("name").getAsString());
                         stageModel.setCode(stageJsonObject.get("code").getAsString());
                         if (stageJsonObject.has("description"))
                             stageModel.setDescription(stageJsonObject.get("description").getAsString());
                         stageModel.setDiffGroup(stageJsonObject.get("diffGroup").getAsString());
                         stageModel.setApCost(stageJsonObject.get("apCost").getAsInt());
-                        stageModel.setOpen(Kengxxiao.isStageOpen(key.getKey())!=0);
+                        stageModel.setOpen(Kengxxiao.isStageOpen(key.getKey()) != 0);
                         JsonArray drops = stageJsonObject.get("stageDropInfo").getAsJsonObject().get("displayDetailRewards").getAsJsonArray();
-                        for (int i = 0; i < drops.size(); i++) {
-                            JsonObject drop = drops.get(i).getAsJsonObject();
-                            try {
-                                if (drop.get("dropType").getAsInt() == 2 || drop.get("dropType").getAsInt() == 3) {
-                                    String id = drop.get("id").getAsString();
-                                    if (itemTable.has(id)) {
-                                        String name = itemTable.get(id).getAsJsonObject().get("name").getAsString();
-                                        String iconId = itemTable.get(id).getAsJsonObject().get("iconId").getAsString();
-                                        int OccPercent = drop.get("occPercent").getAsInt();
-                                        StageModel.Reward stringStringEntry = new StageModel.Reward();
-                                        stringStringEntry.setItemId(id);
-                                        stringStringEntry.setName0(name);
-                                        stringStringEntry.setIconId(iconId);
-                                        if (jsonArray == null)
-                                            stringStringEntry.setOccPercent(OccPercent);
-                                        else {
-                                            stringStringEntry.setOccPercent(penguin_stats.getRealOccPercent(key.getKey(),id),OccPercent);
-                                        }
+                        if (drops.size() > 0)
+                            for (int i = 0; i < drops.size(); i++) {
+                                JsonObject drop = drops.get(i).getAsJsonObject();
+                                try {
+                                    if (drop.get("dropType").getAsInt() == 2 || drop.get("dropType").getAsInt() == 3) {
+                                        String id = drop.get("id").getAsString();
+                                        if (itemTable.has(id)) {
+                                            String name = itemTable.get(id).getAsJsonObject().get("name").getAsString();
+                                            String iconId = itemTable.get(id).getAsJsonObject().get("iconId").getAsString();
+                                            int OccPercent = drop.get("occPercent").getAsInt();
+                                            StageModel.Reward stringStringEntry = new StageModel.Reward();
+                                            stringStringEntry.setItemId(id);
+                                            stringStringEntry.setName0(name);
+                                            stringStringEntry.setIconId(iconId);
+                                            if (jsonArray == null)
+                                                stringStringEntry.setOccPercent(OccPercent);
+                                            else {
+                                                stringStringEntry.setOccPercent(penguin_stats.getRealOccPercent(key.getKey(), id), OccPercent);
+                                            }
 
-                                        stageModel.displayRewards.add(stringStringEntry);
+                                            stageModel.displayRewards.add(stringStringEntry);
+                                        }
                                     }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
                             }
+                            // 可露希尔没有统计的时候求助企鹅物流
+                        else {
+                            if (key.getKey().contains("act24side"))
+                                stageModel.displayRewards.addAll(penguin_stats.getDropsByStatics(key.getKey()));
                         }
                         AtomicBoolean isSelected = new AtomicBoolean(false);
                         stageStringsList.forEach(s -> {
                             if (stageModel.getStageId().equals(s))
                                 isSelected.set(true);
                         });
+                        // if(key.getKey().equals("act24side_08")){
+                        //     Log.d(TAG, "run: "+key.getValue());
+                        // };
                         if (isSelected.get())
                             stageModel.setSelected(true);
-                        if (stageModel.displayRewards.size() > 0)
+                        if (stageModel.displayRewards.size() > 0
+                            // || key.getKey().contains("act24side")
+                            // ||stageModel.isOpen()
+                        )
                             stagesListAll.add(stageModel);
 
                     } catch (Exception e) {
@@ -196,16 +211,26 @@ public class GameSettingsActivity extends BaseActivity {
                         toastInThread("网络异常或未启动托管！");
                         runOnUiThread(() -> {finish();});
                         // 后面这里好像暂时没用上，似乎是以前的可以离线时发送的写法
-                        try {
-                            gameSettings[0] = Game.getGameSettings_Json(SimpleTool.getJson(url));
-                        } catch (JSONException | IOException ex) {
-                            ex.printStackTrace();
-                        }
+                        // try {
+                        //     gameSettings[0] = Game.getGameSettings_Json(SimpleTool.getJson(url));
+                        // } catch (JSONException | IOException ex) {
+                        //     ex.printStackTrace();
+                        // }
                     }
                     oldSetting = gameSettings[0];
                     final StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.append("当前战斗序列：");
 
+                    int pos = 3;
+                    String[] slotArray = getResources().getStringArray(R.array.accelerateSlot_CN_type);
+                    for (int i = 0; i < slotArray.length; i++) {
+                        if (slotArray[i].equals(oldSetting.accelerateSlot_CN)) {
+                            pos = i;
+                            break;
+                        }
+                    }
+                    int finalPos = pos;
+                    runOnUiThread(()-> sp_accelerateSlot_CN.setSelection(finalPos, false));
 
                     gameSettings[0].battleMaps.forEach(map -> {
                         try {
@@ -213,28 +238,26 @@ public class GameSettingsActivity extends BaseActivity {
                             stringBuilder.append(stageJsonObject.get("code").getAsString() + "(" + stageJsonObject.get("name").getAsString() + ")；");
 
                         } catch (Exception e) {
+                            Log.d(TAG, "run: unknownMap" + map);
                             e.printStackTrace();
                         }
                     });
 
                     stageStringsList = gameSettings[0].battleMaps;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                et_apLimit.setText(gameSettings[0].keepingAP + "");
-                                et_ktkLimit.setText(gameSettings[0].recruitReserve + "");
-                                sw_changeShift.setChecked(gameSettings[0].enableBuildingArrange);
-                                sw_recruitBot.setChecked(gameSettings[0].recruitIgnoreRobot);
-                                sw_hostBattle.setChecked(gameSettings[0].isAutoBattle);
-                                tv_battleMaps.setText(stringBuilder);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                Log.d(TAG, "run: " + gameSettings[0].recruitIgnoreRobot);
-                            }
-
-
+                    runOnUiThread(() -> {
+                        try {
+                            et_apLimit.setText(gameSettings[0].keepingAP + "");
+                            et_ktkLimit.setText(gameSettings[0].recruitReserve + "");
+                            sw_changeShift.setChecked(gameSettings[0].enableBuildingArrange);
+                            sw_recruitBot.setChecked(gameSettings[0].recruitIgnoreRobot);
+                            sw_hostBattle.setChecked(gameSettings[0].isAutoBattle);
+                            tv_battleMaps.setText(stringBuilder);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.d(TAG, "run: " + gameSettings[0].recruitIgnoreRobot);
                         }
+
+
                     });
 
                 } catch (Exception e) {
@@ -278,6 +301,8 @@ public class GameSettingsActivity extends BaseActivity {
                 gameSettings.recruitReserve = Integer.parseInt(et_ktkLimit.getText().toString());
                 gameSettings.battleMaps = stageStringsList;
                 gameSettings.isStopped = oldSetting.isStopped;
+
+                gameSettings.accelerateSlot_CN = getResources().getStringArray(R.array.accelerateSlot_CN_type)[sp_accelerateSlot_CN.getSelectedItemPosition()];
 
                 new Thread(new Runnable() {
                     @Override
@@ -397,6 +422,7 @@ public class GameSettingsActivity extends BaseActivity {
         sw_changeShift = findViewById(R.id.sw_changeShift);
         sw_recruitBot = findViewById(R.id.sw_recruitBot);
         sw_hostBattle = findViewById(R.id.sw_hostBattle);
+        sp_accelerateSlot_CN = findViewById(R.id.sp_accelerateSlot_CN);
         tv_battleMaps = findViewById(R.id.tv_battleMaps);
         rc_battleSelect = findViewById(R.id.rc_battleSelect);
     }
@@ -415,12 +441,7 @@ public class GameSettingsActivity extends BaseActivity {
         gameInstanceInfo = new Game.GameInfo().backupFromIntentBundle(getIntent());
     }
 
-    public void toastInThread(String s) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+    // public void toastInThread(String s) {
+    //     runOnUiThread(() -> Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show());
+    // }
 }

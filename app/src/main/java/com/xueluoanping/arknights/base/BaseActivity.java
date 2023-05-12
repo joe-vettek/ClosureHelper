@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.gson.JsonIOException;
 import com.xueluoanping.arknights.R;
 import com.xueluoanping.arknights.SimpleApplication;
 import com.xueluoanping.arknights.api.main.auth;
@@ -49,7 +50,7 @@ public class BaseActivity extends AppCompatActivity {
 
     public void startWebActivity(String url) {
         Intent i1 = getStartActivityIntent(WebActivity2.class);
-        i1.putExtra("url",url);
+        i1.putExtra("url", url);
         startActivity(i1);
 
     }
@@ -83,34 +84,36 @@ public class BaseActivity extends AppCompatActivity {
         } else if (oldTheme == R.style.AppTheme_NoActionBar_nightTheme) {
             Toast.makeText(this, "切换到主题： 小鸭子的秋天", Toast.LENGTH_SHORT).show();
             spTool.setTheme(R.style.AppTheme_NoActionBar_AutumnDuck);
-        }
-        if (oldTheme == R.style.AppTheme_NoActionBar_AutumnDuck) {
+        } else if (oldTheme == R.style.AppTheme_NoActionBar_AutumnDuck) {
             Toast.makeText(this, "切换到主题： 浮光跃金", Toast.LENGTH_SHORT).show();
             spTool.setTheme(R.style.AppTheme_NoActionBar_FloatingGold);
 
-        }
-        if (oldTheme == R.style.AppTheme_NoActionBar_FloatingGold) {
+        } else if (oldTheme == R.style.AppTheme_NoActionBar_FloatingGold) {
             Toast.makeText(this, "切换到主题： 云中梦", Toast.LENGTH_SHORT).show();
             spTool.setTheme(R.style.AppTheme_NoActionBar);
 
+        } else {
+            Toast.makeText(this, "切换到主题： 小鸭子的秋天", Toast.LENGTH_SHORT).show();
+            spTool.setTheme(R.style.AppTheme_NoActionBar_AutumnDuck);
         }
         ((SimpleApplication) SimpleApplication.getContext()).restart();
     }
 
     public void queryArknightsIsMaintaining() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (auth.isMaintaining()) {
-                        NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                        nMgr.cancel("".hashCode());
-                        notifyUser("托管", "正在维护");
-                        SimpleTool.toastInThread(BaseActivity.this, "当前可露希尔正在维护");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+        new Thread(() -> {
+            try {
+                auth.announcement a = auth.isMaintaining();
+                if (a.getAnnouncement() != null && !a.getAnnouncement().equals("暂无"))
+                    toastInThread(a.getAnnouncement());
+                Log.d(TAG, "queryArknightsIsMaintaining: " + a.getIsMaintain());
+                if (a.getIsMaintain()) {
+                    NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    nMgr.cancel("".hashCode());
+                    notifyUser("托管", "正在维护");
+                    toastInThread("当前可露希尔正在维护");
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }).start();
     }

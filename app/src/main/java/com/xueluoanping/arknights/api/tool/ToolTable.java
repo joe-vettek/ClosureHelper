@@ -19,7 +19,7 @@ public class ToolTable {
     }
 
     private static ToolTable instance;
-    private JsonObject CharacterTable;
+    // private JsonObject CharacterTable;
     private JsonObject ItemTable;
     private JsonObject StageTable;
     private JsonObject StageValidInfoTable;
@@ -32,7 +32,7 @@ public class ToolTable {
     private ToolTable() {
         this.isUpdating = true;
 
-        this.CharacterTable = loadCharacterTable();
+        // this.CharacterTable = loadCharacterTable();
         this.ItemTable = loadItemTable();
         this.ItemNameTable = loadItemNameTable();
 
@@ -53,8 +53,7 @@ public class ToolTable {
 
     // 仅仅统计主要的
     public boolean hasCompleteInit() {
-        return this.CharacterTable != null
-                && this.ItemTable != null
+        return this.ItemTable != null
                 && this.StageTable != null
                 && this.ItemNameTable != null;
     }
@@ -76,9 +75,7 @@ public class ToolTable {
         return null;
     }
 
-    private JsonObject loadCharacterTable() {
-        return loadDataTable("data/character_table.json");
-    }
+
 
     private JsonObject loadItemTable() {
         JsonObject j = loadDataTable("data/item_table.json");
@@ -126,9 +123,9 @@ public class ToolTable {
         return loadDataTable("data/item_name_table.json");
     }
 
-    public JsonObject getCharacterTable() {
-        return CharacterTable;
-    }
+    // public JsonObject getCharacterTable() {
+    //     return CharacterTable;
+    // }
 
     public JsonObject getItemTable() {
         return ItemTable;

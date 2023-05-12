@@ -8,6 +8,9 @@ import com.xueluoanping.arknights.SimpleApplication;
 import com.xueluoanping.arknights.global.Global;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.TreeSet;
 
 public class spTool {
@@ -16,7 +19,7 @@ public class spTool {
     private static final boolean defaultValue_Boolean = false;
     private static final String Pos_UserInfo = "User";
     private static final String Pos_AppSetting = "Setting";
-    private static final String Pos_App= "App";
+    private static final String Pos_App = "App";
     private static final String Key_UserName = "name";
     private static final String Key_Password = "password";
     private static final String Key_Token = "token";
@@ -29,7 +32,10 @@ public class spTool {
     private static final String Key_Theme = "styleName";
     private static final String Key_LineSelect = "lineSelect";
     private static final String Key_ResourceSelect = "resourceSelect";
+    private static final String Key_MusicSelect = "musicSelect";
     private static final String Key_AppVersion = "version";
+    private static final String Key_NewOperator = "newOperator";
+
     public static String get(String location, String key, String defaultValue) {
         SharedPreferences sp = SimpleApplication.getContext().getSharedPreferences(location, Context.MODE_PRIVATE);
         return sp.getString(key, defaultValue);
@@ -150,6 +156,7 @@ public class spTool {
     public static int getLineSelect() {
         return get(Pos_AppSetting, Key_LineSelect, 0);
     }
+
     public static void setLineSelect(int token) {
         save(Pos_AppSetting, Key_LineSelect, token);
     }
@@ -157,13 +164,23 @@ public class spTool {
     public static int getResourceSelect() {
         return get(Pos_AppSetting, Key_ResourceSelect, 0);
     }
+
     public static void setResourceSelect(int token) {
         save(Pos_AppSetting, Key_ResourceSelect, token);
+    }
+
+    public static int getMusicSelect() {
+        return get(Pos_AppSetting, Key_MusicSelect, 0);
+    }
+
+    public static void setMusicSelect(int token) {
+        save(Pos_AppSetting, Key_MusicSelect, token);
     }
 
     public static int getTheme() {
         return get(Pos_AppSetting, Key_Theme, R.style.AppTheme_NoActionBar_AutumnDuck);
     }
+
     public static void setTheme(int token) {
         save(Pos_AppSetting, Key_Theme, token);
     }
@@ -171,7 +188,29 @@ public class spTool {
     public static String getVersion() {
         return get(Pos_App, Key_AppVersion, defaultValue_String);
     }
+
     public static void setVersion(String token) {
         save(Pos_App, Key_AppVersion, token);
+    }
+
+    public static void addNewOperatorTime(String value) {
+        SharedPreferences sp = SimpleApplication.getContext().getSharedPreferences(Pos_UserInfo, Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = sp.edit();
+        Set<String> set = new LinkedHashSet<>(sp.getStringSet(Key_NewOperator, new HashSet<>()));
+        set.add(value);
+        ed.putStringSet(Key_NewOperator,set);
+        ed.apply();
+    }
+
+    public static void cleanNewOperatorTimeSet() {
+        SharedPreferences sp = SimpleApplication.getContext().getSharedPreferences(Pos_UserInfo, Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putStringSet(Key_NewOperator,new HashSet<>());
+        ed.apply();
+    }
+
+    public static Set<String> getNewOperatorTimeSet() {
+        SharedPreferences sp = SimpleApplication.getContext().getSharedPreferences(Pos_UserInfo, Context.MODE_PRIVATE);
+        return sp.getStringSet(Key_NewOperator, new HashSet<>());
     }
 }

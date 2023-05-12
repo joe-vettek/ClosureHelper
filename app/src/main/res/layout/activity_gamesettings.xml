@@ -32,6 +32,7 @@
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:textColor="?attr/switchTextColorCustom"
                 android:text="@string/gameSetting_saveAp" />
 
             <EditText
@@ -54,6 +55,7 @@
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:textColor="?attr/switchTextColorCustom"
                 android:text="@string/gameSetting_saveTKT_RECRUIT" />
 
             <EditText
@@ -89,6 +91,33 @@
             android:layout_weight="1"
             android:textColor="?attr/switchTextColorCustom"
             android:text="@string/gameSetting_changeShift" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:text="设置无人机加速房间"
+                android:textColor="?attr/switchTextColorCustom" />
+
+            <Spinner
+                android:id="@+id/sp_accelerateSlot_CN"
+                android:layout_width="10dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:background="@null"
+                android:entries="@array/accelerateSlot_CN_type"
+                android:gravity="end"
+                android:spinnerMode="dialog"
+                android:textAlignment="textEnd"
+                android:textColor="@color/colorText" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tv_battleMaps"

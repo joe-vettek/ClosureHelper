@@ -10,12 +10,20 @@ import java.util.TimeZone;
 
 public class ToolTime {
 
+    static {
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Shanghai"));
+    }
     // 获取当前时区相对东八区的偏移值，注意getRawOffset的返回值正负号
     public static long getTimeOffset() {
+        // Log.d("ToolTime", "getTimeOffset: "+TimeZone.getTimeZone("Asia/Shanghai").getRawOffset()+","+TimeZone.getDefault().getRawOffset());
+        // TimeZone tz = TimeZone.getDefault();
+        // System.out.println("TimeZone   "+tz.getDisplayName(false, TimeZone.SHORT)+" Timezone id :: " +tz.getID());
       return   TimeZone.getTimeZone("Asia/Shanghai").getRawOffset()-TimeZone.getDefault().getRawOffset();
     }
 
     public static long getTimeShanghai() {
+        // TimeZone.setDefault(TimeZone.getTimeZone("Asia/Shanghai"));
+        // 这个时间不知道是不是可以穿过虚拟机获取系统的，所以手动设置时区
         return  System.currentTimeMillis()+getTimeOffset();
     }
 

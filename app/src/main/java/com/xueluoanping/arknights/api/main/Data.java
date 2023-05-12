@@ -187,9 +187,6 @@ public class Data {
 
     }
 
-    public static JSONObject getCharacterTable() throws JSONException, IOException {
-        return getDataTable( "data/character_table.json");
-    }
 
     public static JSONObject getItemTable() throws JSONException, IOException {
         return getDataTable( "data/item_table.json").getJSONObject("items");

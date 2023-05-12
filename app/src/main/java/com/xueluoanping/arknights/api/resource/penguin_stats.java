@@ -9,10 +9,14 @@ import com.xueluoanping.arknights.SimpleApplication;
 import com.xueluoanping.arknights.api.tool.ToolFile;
 import com.xueluoanping.arknights.api.tool.ToolTable;
 import com.xueluoanping.arknights.api.tool.ToolTime;
+import com.xueluoanping.arknights.custom.stage.StageModel;
 import com.xueluoanping.arknights.pro.HttpConnectionUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.Collator;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 
 public class penguin_stats {
@@ -31,21 +35,21 @@ public class penguin_stats {
         Log.d(TAG, "refreshDropsData: 刷新成功");
     }
 
-    public static boolean checkUpdate()  {
+    public static boolean checkUpdate() {
         try {
             String filePath = ToolFile.getBaseUrl() + fileName_matrixAll;
             String versionFilePath = ToolFile.getBaseUrl() + fileName_version;
             File file = new File(filePath);
             File file2 = new File(versionFilePath);
-            if (file.exists()&&file2.exists()) {
+            if (file.exists() && file2.exists()) {
                 long time = Long.parseLong(ToolFile.getTextFile(fileName_version));
-                if (ToolTime.getTimeShanghai() - time < 24 * 60 * 1000) return false;
-                else  return true;
+                if (ToolTime.getTimeShanghai() - time < 30* 60 * 1000) return false;
+                else return true;
             } else return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
-       return true;
+        return true;
     }
 
     public static String getRealOccPercent(String stageId, String itemId) {
@@ -71,4 +75,62 @@ public class penguin_stats {
         return result;
     }
 
+    public static ArrayList<StageModel.Reward> getDropsByStatics(String stageId) {
+        ArrayList<StageModel.Reward> list = new ArrayList<>();
+
+        if (ToolTable.getInstance().hasCompleteInit()) {
+            JsonObject itemTable = ToolTable.getInstance().getItemTable();
+            JsonArray a = ToolTable.getInstance().getMatrixTable();
+            int size = a.size();
+            for (int i = 0; i < size; i++) {
+                JsonObject j = a.get(i).getAsJsonObject();
+                String s0 = j.get("stageId").getAsString();
+                String result = "";
+                // act17side_04 企鹅物流后面加了后缀
+                if (!s0.contains(stageId)) continue;
+                String id = j.get("itemId").getAsString();
+                int times = j.get("times").getAsInt();
+                int quantity = j.get("quantity").getAsInt();
+                if (times > 0)
+                    result = String.format(Locale.CHINA, "%.1f", quantity * 100f / (float) times) + "%";
+                else result = "0%";
+                if (itemTable.has(id)) {
+                    String name = itemTable.get(id).getAsJsonObject().get("name").getAsString();
+                    String iconId = itemTable.get(id).getAsJsonObject().get("iconId").getAsString();
+                    StageModel.Reward stringStringEntry = new StageModel.Reward();
+                    stringStringEntry.setItemId(id);
+                    stringStringEntry.setName0(name);
+                    stringStringEntry.setIconId(iconId);
+                    stringStringEntry.setOccPercent(result, -1);
+                    list.add(stringStringEntry);
+                }
+            }
+        }
+        if (list.size() > 0) {
+            ArrayList<String> ss = new ArrayList<>();
+            list.forEach(reward -> ss.add(reward.getItemId()));
+            Collator in = Collator.getInstance(Locale.CHINA);
+            ss.sort(in);
+            int size = ss.size();
+            if (size == list.size()) {
+                ArrayList<StageModel.Reward> list2 = new ArrayList<>();
+                for (int i = 0; i < size; i++) {
+                    for (int j = 0; j < size; j++) {
+                        if (ss.get(i).equals(list.get(j).getItemId())) {
+                            list2.add(list.get(j));
+                            break;
+                        }
+                    }
+                }
+                list = list2;
+                Collections.reverse(list);
+            }
+            // System.out.println("排序开始");
+            // for (String s1 : list) {
+            //     System.out.println(s1);
+            // }
+
+        }
+        return list;
+    }
 }

@@ -20,16 +20,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.MultiTransformation;
 import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
 import com.xueluoanping.arknights.R;
 import com.xueluoanping.arknights.SimpleApplication;
 import com.xueluoanping.arknights.api.resource.dzp;
+import com.xueluoanping.arknights.api.resource.prts;
+import com.xueluoanping.arknights.api.tool.ToolGlide;
 import com.xueluoanping.arknights.api.tool.ToolTable;
 import com.xueluoanping.arknights.api.tool.ToolTheme;
 import com.xueluoanping.arknights.custom.CenterSpaceImageSpan;
 import com.xueluoanping.arknights.custom.Item.ItemModel;
+import com.xueluoanping.arknights.custom.SmallPictureTransformation;
 import com.xueluoanping.arknights.custom.TextImageTransformation;
 import com.xueluoanping.arknights.pages.GameSettingsActivity;
 import com.xueluoanping.arknights.pro.SimpleTool;
@@ -83,10 +87,12 @@ public class StageAdapter extends BaseQuickAdapter<StageModel, BaseViewHolder> {
                 params.height = itemHeight;
                 view.setLayoutParams(params);
                 tr.addView(view);
+                RequestOptions options=new RequestOptions().transform(new MultiTransformation<>(new SmallPictureTransformation(),new TextImageTransformation(entry.getOccPercent(), paintColor, false)));
+                RequestOptions options2=new RequestOptions().transform(new MultiTransformation<>(new SmallPictureTransformation(),new TextImageTransformation(entry.getOccPercent(),entry.getName0(), paintColor, true)));
                 Glide.with(getContext())
                         .load(dzp.getItemIconUrlById(entry.getIconId()))
-                        .apply(new RequestOptions().transform(new TextImageTransformation(entry.getOccPercent(), paintColor, false)))
-                        .error(Glide.with(getContext()).load(R.mipmap.pic_holder))
+                        .apply(options)
+                        .error(ToolGlide.errorNoImage(getContext(),options2))
                         .into(view);
                 // stringBuilder.append(entry.getName0()).append("；");
             });

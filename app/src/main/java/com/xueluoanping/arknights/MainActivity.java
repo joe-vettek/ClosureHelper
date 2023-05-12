@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -46,6 +47,8 @@ import com.xueluoanping.arknights.pages.fragment.SectionsPagerAdapter;
 import com.xueluoanping.arknights.pro.SimpleTool;
 import com.xueluoanping.arknights.pro.spTool;
 import com.xueluoanping.arknights.services.SimpleService;
+
+import java.io.FileNotFoundException;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -101,7 +104,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         getWindow().setStatusBarColor(Color.TRANSPARENT);
         getWindow().setNavigationBarColor(Color.TRANSPARENT);
 
-        if (spTool.getStartMusic()) playMusic();
+        if (spTool.getStartMusic()) playMusic(true);
+        else playMusic(false);
     }
 
     private void loginKLXE() {
@@ -118,7 +122,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void showAnnouncement() {
 
-        SimpleTool.toastInThread(this, "可露希尔公告:" + getString(R.string.AnnouncementText));
+        // SimpleTool.toastInThread(this, "可露希尔公告:" + getString(R.string.AnnouncementText));
 
         if (ToolTime.getTimeOffset() != 0)
             SimpleTool.toastInThread(this, "您的所在时区非北京时间，注意本APP使用北京时间显示内容！");
@@ -271,7 +275,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onClick(View v) {
                 floatingActionsMenu0.collapse();
-                playMusic();
+                playMusic(true);
 
 
             }
@@ -290,7 +294,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
     }
 
-    private void playMusic() {
+    private void playMusic(boolean random) {
         new Thread(() -> {
             try {
                 if (mediaPlayer != null) {
@@ -309,24 +313,51 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     mediaPlayer = null;
                 }
                 mediaPlayer = new MediaPlayer();
-                BetterEntry<String, String> ee = monster_siren.getRandomSong();
-                mediaPlayer.setDataSource(ee.getValue());
-                mediaPlayer.prepareAsync();
+                String randomName = "";
+                if (random) {
+                    BetterEntry<String, String> ee = monster_siren.getRandomSong();
+                    mediaPlayer.setDataSource(ee.getValue());
+                    randomName = ee.getKey();
+                } else {
+                    // 避免不存在
+                    try {
+                        int id = spTool.getMusicSelect();
+                        int realId = Integer.parseInt(getResources().getStringArray(R.array.music_type_id)[id]);
+                        if (realId != -100)
+                            mediaPlayer.setDataSource(monster_siren.getMusicFilePos(realId));
+                        else {
+                            AssetFileDescriptor file = getResources().openRawResourceFd(R.raw.running_in_the_dark);
+                            mediaPlayer.setDataSource(file.getFileDescriptor(), file.getStartOffset(), file.getLength());
+
+                        }
+                        mediaPlayer.setLooping(true);
+                    } catch (Exception e) {
+                        // e.printStackTrace();
+                        Log.d(TAG, "playMusic: 播放失败");
+                    }
+                }
+                mediaPlayer.prepare();
                 // mediaPlayer.setOnPreparedListener(MediaPlayer::start);
+                String finalRandomName = randomName;
                 mediaPlayer.setOnPreparedListener((p) -> {
                     p.start();
-                    toastInThread("正在播放：  塞壬唱片 - " + ee.getKey());
+                    if (random)
+                        toastInThread("正在播放：  塞壬唱片 - " + finalRandomName);
                 });
-                mediaPlayer.setOnCompletionListener((p) -> {
-                    p.release();
-                    mediaPlayer = null;
-                    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                    notificationManager.cancel(10);
-                    toastInThread("播放结束");
-                });
+                if (random)
+                {
+                    mediaPlayer.setOnCompletionListener((p) -> {
+                        p.release();
+                        mediaPlayer = null;
+                        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        notificationManager.cancel(10);
+                        toastInThread("播放结束");
+                    });
+                }
             } catch (Exception e) {
                 e.printStackTrace();
-                toastInThread("暂无可用资源，请重试");
+                if (random)
+                    toastInThread("暂无可用资源，请重试");
                 mediaPlayer.release();
                 mediaPlayer = null;
             }

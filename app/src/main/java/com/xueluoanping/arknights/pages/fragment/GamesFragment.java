@@ -55,10 +55,12 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -290,18 +292,28 @@ public class GamesFragment extends BaseFragment implements FragmentWithName {
         datas.clear();
         datas2.clear();
         datas_log.clear();
-        alertTextView("\n\n\n\n\n\n" + getText(R.string.timeoutText).toString());
-        alertTextView2("");
+        safeRunOnUiThread(() -> {
+            alertTextView("\n\n\n\n\n\n" + getText(R.string.timeoutText).toString());
+            alertTextView2("");
+        });
+
         // if (!
-        if (getActivity() != null && getActivity() instanceof BaseActivity)
-            ((BaseActivity) getActivity()).queryArknightsIsMaintaining();
+        // if (getActivity() != null && getActivity() instanceof BaseActivity)
+        //     ((BaseActivity) getActivity()).queryArknightsIsMaintaining();
         // ) return;
         loadStatus();
     }
 
 
     public void toastInThread(String s) {
-        safeRunOnUiThread(() -> Toast.makeText(SimpleApplication.getContext(), s, Toast.LENGTH_SHORT).show());
+        safeRunOnUiThread(() -> {
+            SimpleTool.toastInThread(getActivity(), s);
+            // try {
+            //     Toast.makeText(SimpleApplication.getContext(), s, Toast.LENGTH_SHORT).show();
+            // } catch (Exception e) {
+            //     e.printStackTrace();
+            // }
+        });
     }
 
     public void alertTextView(String s) {
@@ -349,12 +361,37 @@ public class GamesFragment extends BaseFragment implements FragmentWithName {
                             });
                             // 分析是否有高星
                             new Thread(() -> {
+                                if(datas_log.size()==0)return;
+                                long tNew=datas_log.get(datas_log.size()-1).ts0;
+                                Set<String> set=spTool.getNewOperatorTimeSet();
+                                // boolean needClean = false;
+                                final long[] t00 = {0};
+                                set.forEach(s -> {
+                                    try {
+                                        long tOld=Long.parseLong(s);
+                                        if(tOld> t00[0]){
+                                            t00[0] =tOld;
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+                                if(t00[0]<tNew){
+                                    set=new HashSet<>();
+                                    spTool.cleanNewOperatorTimeSet();
+                                }
+                                Set<String> finalSet = set;
                                 datas_log.forEach((gameLog -> {
                                     String regex4 = ".*5★.*|.*6★.*";
                                     if (gameLog.getInfo().matches(regex4)) {
-                                        String x = SimpleTool.protectTelephoneNum(GamesFragment.this.gameInstanceInfo.account) + "出现高星干员！";
+                                        boolean hasInformed = finalSet.contains(gameLog.ts0 + "");
+                                        if (hasInformed) return;
+
+                                        String y = gameLog.getInfo().matches(".*5★.*") ? "五星" : "六星";
+                                        String x = SimpleTool.protectTelephoneNum(GamesFragment.this.gameInstanceInfo.account) + "于" + ToolTime.getFormatDate(gameLog.ts0, false) + "出现" + y + "干员！";
                                         toastInThread(x);
-                                        notifyUser(SimpleTool.protectTelephoneNum(GamesFragment.this.gameInstanceInfo.account), "有高星干员出现了");
+                                        notifyUser(SimpleTool.protectTelephoneNum(GamesFragment.this.gameInstanceInfo.account), "于" + ToolTime.getFormatDate(gameLog.ts0, false) + "有" + y + "干员出现了");
+                                        spTool.addNewOperatorTime(gameLog.ts0 + "");
                                     }
                                 }));
                             }).start();
@@ -374,7 +411,7 @@ public class GamesFragment extends BaseFragment implements FragmentWithName {
                                     });
                                 }
                                 float time = (ToolTime.getTimeShanghai() * 1.0f - datas_log.get(datas_log.size() - 1).ts0) / 1000f / 3600f;
-                                Log.d(TAG, "run: 计算托管时间" + time);
+                                Log.d(TAG, "run: 计算托管时间" + time + "," + ToolTime.getTimeShanghai());
                                 String c000 = (entry.getKey() > 0 ? "下次运行时间：" + ToolTime.getFormatDate(entry.getKey(), false) : "下次运行时间：未知")
                                         + "\n托管时长：%.1f小时\n";
                                 c000 = String.format(Locale.CHINA, c000, time);
@@ -391,7 +428,7 @@ public class GamesFragment extends BaseFragment implements FragmentWithName {
                                             SpannableString spannableString = new SpannableString(text0);
                                             if (!flag) {
                                                 String url = dzp.getItemIconUrl(name);
-                                                UrlImageSpan imageSpan = new UrlImageSpan(getContext(), url + "", t14, amount);
+                                                UrlImageSpan imageSpan = new UrlImageSpan(getContext(), url + "", name, t14, amount);
                                                 spannableString.setSpan(imageSpan, 0, text0.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
                                                 String clickHint = name + "（共" + amount + "个）";
@@ -403,7 +440,7 @@ public class GamesFragment extends BaseFragment implements FragmentWithName {
                                                 };
                                                 spannableString.setSpan(clickableSpan, 0, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                                             } else {
-                                                UrlImageSpan imageSpan = new UrlImageSpan(getContext(), name, t14, amount);
+                                                UrlImageSpan imageSpan = new UrlImageSpan(getContext(), name, name, t14, amount);
                                                 spannableString.setSpan(imageSpan, 0, text0.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
                                                 String clickHint = name + "（共" + amount + "个）";
@@ -667,7 +704,7 @@ public class GamesFragment extends BaseFragment implements FragmentWithName {
 
 
     private void loadData_Log() {
-        LinearLayoutManager r = new LinearLayoutManager(SimpleApplication.getContext());
+        LinearLayoutManager r = new LinearLayoutManager(getContext());
         r.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView_log.setLayoutManager(r);
         adapter_log = new GameLogAdapter(R.layout.ic_logrecord, datas_log);

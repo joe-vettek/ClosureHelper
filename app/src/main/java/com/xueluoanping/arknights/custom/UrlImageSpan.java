@@ -31,6 +31,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.xueluoanping.arknights.R;
+import com.xueluoanping.arknights.api.tool.ToolGlide;
 import com.xueluoanping.arknights.api.tool.ToolTheme;
 import com.xueluoanping.arknights.pro.SimpleTool;
 import com.xueluoanping.arknights.pro.spTool;
@@ -55,7 +56,6 @@ public class UrlImageSpan extends ImageSpan {
         this.url = url;
         this.tv = tv;
         this.amount = amount;
-
         // boolean a=ToolTheme.getBooleanValue(context,R.attr.isLightTheme);
         // 这无关紧要，不如考虑版本问题
         this.color =
@@ -69,14 +69,16 @@ public class UrlImageSpan extends ImageSpan {
 
     }
 
+    String tip = "";
+
+    public UrlImageSpan(Context context, String url, String tip, TextView tv, int amount) {
+        this(context, url, tv, amount);
+        this.tip = tip;
+    }
+
     @Override
     public Drawable getDrawable() {
         if (!picShowed) {
-            RequestOptions options = new RequestOptions();
-
-            String shortAmountText = SimpleTool.getShortAmountDescriptionText(amount);
-            TextImageTransformation textImageTransformation=new TextImageTransformation(shortAmountText, color,false);
-            options = options.transform(textImageTransformation);
             if (tv.getContext() instanceof Activity) {
                 if (!((Activity) tv.getContext()).isDestroyed()) {
                     SimpleTarget<Drawable> target = new SimpleTarget<Drawable>() {
@@ -109,34 +111,32 @@ public class UrlImageSpan extends ImageSpan {
                         }
                     };
 
+                    String shortAmountText = SimpleTool.getShortAmountDescriptionText(amount);
+                    RequestOptions options =
+                            new RequestOptions().transform(
+                                    new MultiTransformation<>(
+                                            new SmallPictureTransformation(), new TextImageTransformation(shortAmountText, color, false)));
+                    RequestOptions options2 =
+                            new RequestOptions().transform(
+                                    new MultiTransformation<>(
+                                            new SmallPictureTransformation(), new TextImageTransformation(shortAmountText, tip, color, false)));
 
-                    RequestManager manager = Glide.with(tv.getContext());
-                    RequestBuilder<Drawable> builder;
-
-                    if (UrlImageSpan.this.url!=null&&UrlImageSpan.this.url.contains("http"))
-                        builder = manager.load(url).apply(options);
-                    else builder = manager.load("https://prts.wiki/images/f/fb/%E6%97%A0%E5%9B%BE%E7%89%87%E5%8D%A0%E4%BD%8D%E7%AC%A6.png")
-                            .apply(new RequestOptions().transform(new MultiTransformation<>(new SmallPictureTransformation(),textImageTransformation)));
-                    // 说明，加载本地图片似乎有严重的分辨率问题导致字体渲染效果不佳
-                    // error处理不了也是因为处理不了drawable，这和Bitmap有区别，后续待改进一下
-                    // apply只能apply一次
-                    // 还有个问题是加载不了
-                    // Log.d(TAG, "getDrawable: "+url);
-                    builder
-                            // error 部分需要单独设置requestOption
-                            .error(Glide.with(tv.getContext()).load("https://prts.wiki/images/f/fb/%E6%97%A0%E5%9B%BE%E7%89%87%E5%8D%A0%E4%BD%8D%E7%AC%A6.png").error(Glide.with(tv.getContext()).load(R.mipmap.pic_holder)).apply(new RequestOptions().transform(new MultiTransformation<>(new SmallPictureTransformation(),textImageTransformation))))
+                    Glide.with(tv.getContext())
+                            .load(url)
+                            .apply(options)
+                            .error(ToolGlide.errorNoImage(tv.getContext(), options2))
                             .into(target);
+                }
+
             }
 
+
         }
-
-
-    }
         return super.
 
-    getDrawable();
+                getDrawable();
 
-}
+    }
 
     /**
      * 按宽度缩放图片

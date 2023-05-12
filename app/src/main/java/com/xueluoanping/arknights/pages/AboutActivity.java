@@ -71,7 +71,8 @@ public class AboutActivity extends AppCompatActivity {
                 "\t\t\t\thref=\"https://monster-siren.hypergryph.com/music\"><img src=\"https://web.hycdn.cn/siren/site/manifest/icon_192.png\" alt=\"\" width=\"20\" height=\"20\">塞壬唱片</a>，感谢以上大佬们的API共享和资源开放；\n" +
                 "\t\t\t<br>\n" +
                 "\t\t\t2.本APP源代码仓库地址：<a\n" +
-                "\t\t\t\thref=\"https://github.com/joe-vettek/ClosureHelper\"><img src=\"https://avatars.githubusercontent.com/u/82761814?v=4\" alt=\"\" width=\"20\" height=\"20\">https://github.com/joe-vettek/ClosureHelper</a>\n" +
+                "\t\t\t\thref=\"https://github.com/joe-vettek/ClosureHelper\"><img src=\"https://avatars.githubusercontent.com/u/82761814?v=4\" alt=\"\" width=\"20\" height=\"20\">https://github.com/joe-vettek/ClosureHelper</a>；\n" +
+                "<br>\t\t\t3.注册账号和绑定QQ两个一次性高危操作请点击后面链接访问<a href=\"https://arknights.host/\">可露希尔工作室网页版本</a>进行。"+
                 "\t\t\t<br>\n" +
                 "\t\t\t<br>\n" +
                 "\t\t\t<h3>使用帮助：</h3>\n" +
@@ -90,7 +91,7 @@ public class AboutActivity extends AppCompatActivity {
         // flags
         // FROM_HTML_MODE_COMPACT：html块元素之间使用一个换行符分隔
         // FROM_HTML_MODE_LEGACY：html块元素之间使用两个换行符分隔
-        textView.setText(Html.fromHtml(s, Html.FROM_HTML_MODE_LEGACY, imageGetter, null));
+        textView.setText(Html.fromHtml(s, Html.FROM_HTML_MODE_COMPACT, imageGetter, null));
         textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 

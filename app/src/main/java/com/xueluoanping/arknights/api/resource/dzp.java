@@ -83,7 +83,7 @@ public class dzp {
 
     public static String getItemIconUrl(String name) {
         try {
-            return String.format(url_ItemIcon, ToolTable.getInstance().getItemNameTable().get(SimpleTool.getUUID(name).toString()).getAsString());
+            return getItemIconUrlById(ToolTable.getInstance().getItemNameTable().get(SimpleTool.getUUID(name).toString()).getAsString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -91,7 +91,21 @@ public class dzp {
     }
 
     public static String getItemIconUrlById(String id) {
-        return String.format(url_ItemIcon, id);
+        switch (id) {
+            case "act24side_melding_5":
+                return "https://prts.wiki/images/6/67/%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E2%80%9C%E5%85%BD%E4%B9%8B%E6%B3%AA%E2%80%9D.png";
+            case "act24side_melding_4":
+                return "https://prts.wiki/images/3/3a/%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E5%87%B6%E8%B1%95%E5%85%BD%E7%9A%84%E5%8E%9A%E5%AE%9E%E7%9A%AE.png";
+            case "act24side_melding_3":
+                return "https://prts.wiki/images/1/1e/%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E9%AC%A3%E7%8A%84%E5%85%BD%E7%9A%84%E5%B0%96%E9%94%90%E9%BD%BF.png";
+            case "act24side_melding_2":
+                return "https://prts.wiki/images/5/5a/%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E6%BA%90%E7%9F%B3%E8%99%AB%E7%9A%84%E7%A1%AC%E5%A3%B3.png";
+            case "act24side_melding_1":
+                return "https://prts.wiki/images/8/82/%E9%81%93%E5%85%B7_%E5%B8%A6%E6%A1%86_%E7%A0%B4%E7%A2%8E%E7%9A%84%E9%AA%A8%E7%89%87.png";
+            default:  return String.format(url_ItemIcon, id);
+        }
+
+        // return String.format(url_ItemIcon, id);
 
     }
 

@@ -30,53 +30,58 @@ public class Kengxxiao {
         switch (spTool.getResourceSelect()) {
             case 0:
                 new Thread(() -> {
-                    if (closure.checkUpdate()) closure.updateFromArknights(context, true);
+                    if (closure.checkUpdate())
+                        closure.updateFromArknights(context, true);
                 }).start();
                 break;
-            case 3:
-                new Thread(() -> {
-                    try {
-                        String base = context.getExternalCacheDir().getAbsolutePath() + "/";
-                        String vText = SimpleTool.getText(base + "data/data_version.txt");
-                        Log.d(TAG, "run: 更新检查 " + vText);
-                        int[] v = stringArrayToIntegerArray(
-                                vText.split("\n")[2]
-                                        .replace("VersionControl:", "")
-                                        // split特殊字符要转义
-                                        .split("\\."));
-                        String url = getKengxxiaoUrl()+"data_version.txt";
-
-                        String vGitText = HttpConnectionUtil.DownLoadTextPages(url, null, false);
-                        try {
-                            Log.d(TAG, vText + "run: 更新检查" + vGitText);
-                            String versionRemote = vGitText.split("\n")[2].replace("VersionControl:", "");
-                            int[] v2 = stringArrayToIntegerArray(versionRemote.split("\\."));
-
-                            boolean needUpdate = false;
-                            if (v2[0] > v[0]) needUpdate = true;
-                            else if (v2[1] > v[1]) needUpdate = true;
-                            else if (v2[2] > v[2]) needUpdate = true;
-
-                            if (needUpdate) {
-                                SimpleTool.toastInThread(context, "需要更新至" + versionRemote);
-                                updateArknightsDataVersion(context);
-                                ToolTable.initInstance();
-                            } else {
-                                // SimpleTool.toastInThread(context, "当前已经是最新版本（" + vText.split("\n")[1].split(" on ")[1] + "）！");
-                            }
-
-                        } catch (Exception e) {
-                            SimpleTool.toastInThread(context, "更新检查出错！");
-                            e.printStackTrace();
-                        }
-                    } catch (Exception e) {
-                        SimpleTool.toastInThread(context, "更新检查出错！");
-                        e.printStackTrace();
-                    }
-
-                }).start();
-                break;
+            // case 3:
+            //     new Thread(() -> {
+            //         try {
+            //             String base = context.getExternalCacheDir().getAbsolutePath() + "/";
+            //             String vText = SimpleTool.getText(base + "data/data_version.txt");
+            //             Log.d(TAG, "run: 更新检查 " + vText);
+            //             int[] v = stringArrayToIntegerArray(
+            //                     vText.split("\n")[2]
+            //                             .replace("VersionControl:", "")
+            //                             // split特殊字符要转义
+            //                             .split("\\."));
+            //             String url = getKengxxiaoUrl()+"data_version.txt";
+            //
+            //             String vGitText = HttpConnectionUtil.DownLoadTextPages(url, null, false);
+            //             try {
+            //                 Log.d(TAG, vText + "run: 更新检查" + vGitText);
+            //                 String versionRemote = vGitText.split("\n")[2].replace("VersionControl:", "");
+            //                 int[] v2 = stringArrayToIntegerArray(versionRemote.split("\\."));
+            //
+            //                 boolean needUpdate = false;
+            //                 if (v2[0] > v[0]) needUpdate = true;
+            //                 else if (v2[1] > v[1]) needUpdate = true;
+            //                 else if (v2[2] > v[2]) needUpdate = true;
+            //
+            //                 if (needUpdate) {
+            //                     SimpleTool.toastInThread(context, "需要更新至" + versionRemote);
+            //                     updateArknightsDataVersion(context);
+            //                     ToolTable.initInstance();
+            //                 } else {
+            //                     // SimpleTool.toastInThread(context, "当前已经是最新版本（" + vText.split("\n")[1].split(" on ")[1] + "）！");
+            //                 }
+            //
+            //             } catch (Exception e) {
+            //                 SimpleTool.toastInThread(context, "更新检查出错！");
+            //                 e.printStackTrace();
+            //             }
+            //         } catch (Exception e) {
+            //             SimpleTool.toastInThread(context, "更新检查出错！");
+            //             e.printStackTrace();
+            //         }
+            //
+            //     }).start();
+            //     break;
             default:
+                new Thread(() -> {
+                    if (closure.checkUpdate())
+                        closure.updateFromArknights(context, true);
+                }).start();
                 break;
         }
 
@@ -106,7 +111,6 @@ public class Kengxxiao {
         String versionFileName = "data/data_version.txt";
         String itemTableFileName = "data/item_table.json";
         String stageTableFileName = "data/stage_table.json";
-        String characterTableFileName = "data/character_table.json";
         String itemNameTableFileName = "data/item_name_table.json";
         String baseUrlRemote = getKengxxiaoUrl();
         // 用不了
@@ -120,7 +124,7 @@ public class Kengxxiao {
             ToolFile.saveTextFile(context, vText, itemTableFileName);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.d(TAG, "updateArknightsDataVersion: " + file.getAbsolutePath());
+            Log.d(TAG, "updateArknightsDataVersion: " + file.getAbsolutePath()+baseUrlRemote + itemTableFileName.replace("data/", ""));
             SimpleTool.toastInThread(context, "物品清单更新出错！");
             return;
         }
@@ -133,17 +137,6 @@ public class Kengxxiao {
             e.printStackTrace();
             Log.d(TAG, "updateArknightsDataVersion: " + file.getAbsolutePath());
             SimpleTool.toastInThread(context, "关卡清单更新出错！");
-            return;
-        }
-        SimpleTool.toastInThread(context, "正在更新角色清单！");
-        file = new File(baseUrl + characterTableFileName);
-        try {
-            String vText = HttpConnectionUtil.DownLoadTextPages(baseUrlRemote + characterTableFileName.replace("data/", ""), null, false);
-            ToolFile.saveTextFile(context, vText, characterTableFileName);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d(TAG, "updateArknightsDataVersion: " + file.getAbsolutePath());
-            SimpleTool.toastInThread(context, "角色清单更新出错！");
             return;
         }
         SimpleTool.toastInThread(context, "正在更新版本控制文件！");

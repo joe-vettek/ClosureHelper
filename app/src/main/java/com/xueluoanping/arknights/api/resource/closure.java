@@ -24,17 +24,17 @@ public class closure {
             String baseUrl = ToolFile.getBaseUrl();
             String itemTableFileName = "data/item_table.json";
             String stageTableFileName = "data/stage_table.json";
-            String characterTableFileName = "data/character_table.json";
             String itemNameTableFileName = "data/item_name_table.json";
             String versionFileName = "data/data_version_dzp.txt";
             boolean flag = new File(baseUrl + itemTableFileName).exists()
                     && new File(baseUrl + stageTableFileName).exists()
-                    && new File(baseUrl + characterTableFileName).exists()
                     && new File(baseUrl + itemNameTableFileName).exists();
             File file2 = new File(ToolFile.getBaseUrl() + versionFileName);
             if (flag && file2.exists()) {
                 long time = Long.parseLong(ToolFile.getTextFile(versionFileName));
-                if (ToolTime.getTimeShanghai() - time < 60 * 1000) return false;
+                // Log.d(TAG, "checkUpdate: "+ToolTime.getTimeShanghai()+","+time);
+                // 这是1800秒
+                if (ToolTime.getTimeShanghai() - time < 30*60 * 1000) return false;
                 else return true;
             } else return true;
         } catch (Exception e) {
@@ -48,7 +48,6 @@ public class closure {
         String versionFileName = "data/data_version_dzp.txt";
         String itemTableFileName = "data/item_table.json";
         String stageTableFileName = "data/stage_table.json";
-        String characterTableFileName = "data/character_table.json";
         String itemNameTableFileName = "data/item_name_table.json";
 
         String url1 = "https://arknights.host/data/Stage.json";

@@ -2,10 +2,13 @@ package com.xueluoanping.arknights.pages;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -21,6 +24,7 @@ public class LoginActivity extends BaseActivity {
     private Button loginButton;
     private EditText userEditText;
     private EditText passwordEditText;
+    private TextView textView5;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,6 +40,8 @@ public class LoginActivity extends BaseActivity {
         loginButton = findViewById(R.id.bt_login);
         userEditText = findViewById(R.id.input_user);
         passwordEditText = findViewById(R.id.input_password);
+        textView5 = findViewById(R.id.textView5);
+
     }
 
 
@@ -43,6 +49,9 @@ public class LoginActivity extends BaseActivity {
         // if (passwordEditText != null
         //         && userEditText != null
         //         && loginButton != null)
+        String s="<div>本APP由可露希尔工作室提供API支持。<br>注册账号和绑定QQ请点击访问<a href=\"https://arknights.host/\">可露希尔工作室网页版本</a>。</div>";
+        textView5.setText(Html.fromHtml(s,Html.FROM_HTML_MODE_COMPACT));
+        textView5.setMovementMethod(LinkMovementMethod.getInstance());
         {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             // 隐藏软键盘
@@ -53,9 +62,9 @@ public class LoginActivity extends BaseActivity {
             loginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    spTool.saveUserName( userEditText.getText().toString());
+                    spTool.saveUserName(userEditText.getText().toString());
                     // 因为问题不大所以不做加密
-                    spTool.savePassword( passwordEditText.getText().toString());
+                    spTool.savePassword(passwordEditText.getText().toString());
 
 
                     new Thread(new Runnable() {

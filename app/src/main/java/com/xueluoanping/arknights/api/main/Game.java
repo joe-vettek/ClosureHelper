@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.xueluoanping.arknights.SimpleApplication;
+import com.xueluoanping.arknights.api.BetterEntry;
 import com.xueluoanping.arknights.api.tool.ToolTime;
 import com.xueluoanping.arknights.custom.GameLog.GameLog;
 import com.xueluoanping.arknights.pro.HttpConnectionUtil;
@@ -18,12 +20,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 
 public class Game {
     private static final String TAG = Game.class.getSimpleName();
@@ -186,7 +186,7 @@ public class Game {
         public boolean recruitIgnoreRobot = false;
         public List<String> battleMaps = new ArrayList<>();
         public boolean isStopped = false;
-
+        public String accelerateSlot_CN = "中层左";
 
         public String getJson() {
             Gson gson = new Gson();
@@ -320,6 +320,7 @@ public class Game {
         gameSettings.recruitReserve = jsonArray.getInt("recruitReserve");
         gameSettings.battleMaps.clear();
         gameSettings.isStopped = jsonArray.getBoolean("isStopped");
+        gameSettings.accelerateSlot_CN = jsonArray.getString("accelerateSlot_CN");
         for (int i = 0; i < jsonArray.getJSONArray("battleMaps").length(); i++) {
             gameSettings.battleMaps.add(jsonArray.getJSONArray("battleMaps").getString(i));
         }
@@ -377,8 +378,9 @@ public class Game {
         return false;
     }
 
-    public static boolean TryAdd(String account, String password, int platform) {
+    public static BetterEntry<Boolean, String> TryAdd(String account, String password, int platform) {
         String urlStr = host.getQuickestHost() + "/Game";
+        BetterEntry<Boolean, String> result = new BetterEntry<>(false, "");
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("account", account);
@@ -386,13 +388,19 @@ public class Game {
             jsonObject.put("platform", platform);
             Log.d(TAG, "TryAdd: " + jsonObject);
             String s = HttpConnectionUtil.post(urlStr, jsonObject.toString(), auth.getTokenMap(SimpleApplication.getContext()));
-            JSONObject message = new JSONObject(s);
+            Gson g = new Gson();
+            JsonObject message = g.fromJson(s, JsonObject.class);
             Log.d(TAG, "TryAdd: " + s);
-            if (message.getInt("code") == 1) return true;
+            if (message.get("code").getAsInt() == 1) {
+                result = new BetterEntry<>(true, message.get("message").getAsString());
+            }
+            if (result.getValue().contains("qq"))
+                result = new BetterEntry<>(result.getKey(), result.getValue() + "，请访问网页版本绑定QQ");
         } catch (Exception e) {
             e.printStackTrace();
+            result = new BetterEntry<>(false, (e.getMessage()));
         }
-        return false;
+        return result;
     }
 
     public static boolean TryCaptcha(String account, int platform, JSONObject jsonObject) {
@@ -419,15 +427,15 @@ public class Game {
 
             List<GameLog> logList = new ArrayList<>();
             // 使用偏移纠正，注意获取的是负数，所以使用-号回正
-            long offset= ToolTime.getTimeOffset();
-            Log.d(TAG, "getLog: "+offset);
+            long offset = ToolTime.getTimeOffset();
+            Log.d(TAG, "getLog: " + offset);
             for (int i = z.data.size() - 1; i > -1; i--) {
                 // 不需要
                 GameLog g = new GameLog();
-                String date = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.CHINA).format(new Date((long) (z.data.get(i).getTs() * 1000+offset)));
+                String date = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.CHINA).format(new Date((long) (z.data.get(i).getTs() * 1000 + offset)));
                 g.setTs(date);
-                g.setInfo(z.data.get(i).getInfo().replace("x","★"));
-                g.ts0= (long) (z.data.get(i).getTs()*1000);
+                g.setInfo(z.data.get(i).getInfo().replace("x", "★"));
+                g.ts0 = (long) (z.data.get(i).getTs() * 1000);
                 logList.add(g);
             }
             return logList;

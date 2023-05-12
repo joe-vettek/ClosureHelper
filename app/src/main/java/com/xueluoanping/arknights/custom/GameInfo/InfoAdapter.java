@@ -1,5 +1,6 @@
 package com.xueluoanping.arknights.custom.GameInfo;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -52,8 +53,9 @@ public class InfoAdapter extends BaseQuickAdapter<Game.GameInfo, BaseViewHolder>
 
     @Override
     protected void convert(@NotNull BaseViewHolder baseViewHolder, Game.GameInfo info) {
-        Switch sw = baseViewHolder.itemView.findViewById(R.id.ic_sw_go);
-        Button bt = baseViewHolder.itemView.findViewById(R.id.ic_bt_delete);
+        @SuppressLint("UseSwitchCompatOrMaterialCode")
+        Switch sw = baseViewHolder.findView(R.id.ic_sw_go);
+        Button bt = baseViewHolder.findView(R.id.ic_bt_delete);
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
 
         // baseViewHolder.setTextColor(R.id.ic_bt_delete,)
@@ -81,8 +83,10 @@ public class InfoAdapter extends BaseQuickAdapter<Game.GameInfo, BaseViewHolder>
                 sTip.setSpan(colorSpan2, 0, sTip.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
                 break;
             default:
-                if (info.status.equals("-"))
+                if (info.status.equals("-")) {
                     sTip = new SpannableString("未运行\n");
+                }
+                sw.setChecked(false);
                 sTip.setSpan(colorSpan2, 0, sTip.length(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
                 break;
         }
@@ -90,7 +94,7 @@ public class InfoAdapter extends BaseQuickAdapter<Game.GameInfo, BaseViewHolder>
 
         baseViewHolder.setText(R.id.ic_tv_accountName, spannableStringBuilder);
 
-        ImageView imageView = baseViewHolder.itemView.findViewById(R.id.ic_iv_icon);
+        ImageView imageView = baseViewHolder.findView(R.id.ic_iv_icon);
         // Data.AccountData data0_back = new Data.AccountData(Data.getOldDataTable(getContext(), info));
 
         new Thread(() -> {
@@ -125,10 +129,10 @@ public class InfoAdapter extends BaseQuickAdapter<Game.GameInfo, BaseViewHolder>
                             // getData().set(getData().indexOf(info), info);
 
                             safeRunOnUiThread(() -> {
-                                notifyItemChanged(baseViewHolder.getLayoutPosition());
+                                notifyItemChanged(getItemPosition(info));
                             });
                             Timer timer = new Timer();
-                            long cacheTime =  ToolTime.getTimeShanghai();
+                            long cacheTime = ToolTime.getTimeShanghai();
                             timer.schedule(new TimerTask() {
 
                                 @Override
@@ -143,7 +147,7 @@ public class InfoAdapter extends BaseQuickAdapter<Game.GameInfo, BaseViewHolder>
                                         //
                                         // }else
                                         if (code == Game.WebGame_Status_Code_Running) {
-                                            long nowTime =  ToolTime.getTimeShanghai();
+                                            long nowTime = ToolTime.getTimeShanghai();
                                             double duration = (nowTime - cacheTime) / 1000.0d;
                                             Log.d(TAG, "run: " + "登录完成，共耗时" + duration + "s");
                                             SimpleTool.toastInThread((Activity) getContext(), "登录完成，共耗时" + duration + "s");
@@ -175,10 +179,10 @@ public class InfoAdapter extends BaseQuickAdapter<Game.GameInfo, BaseViewHolder>
                                         // else {
                                         //     setData(baseViewHolder.getLayoutPosition(), info1);
                                         // }
-                                        setData(baseViewHolder.getLayoutPosition(), info1);
+                                        setData(getItemPosition(info), info1);
                                         if (code == Game.WebGame_Status_Code_ErrorLogin || (info.code != info1.code && !info.status.equals(info1.status)))
                                             safeRunOnUiThread(() -> {
-                                                notifyItemChanged(baseViewHolder.getLayoutPosition());
+                                                notifyItemChanged(getItemPosition(info));
                                                 Log.d(TAG, "run: getGameStatue");
                                             });
                                     } catch (Exception e) {
@@ -240,22 +244,19 @@ public class InfoAdapter extends BaseQuickAdapter<Game.GameInfo, BaseViewHolder>
                         .setPositiveButton("确认", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (Game.TryDelete(info.account, info.platform)) {
-                                            safeRunOnUiThread(() -> {
-                                                getData().remove(baseViewHolder.getLayoutPosition());
-                                                removeAt(baseViewHolder.getLayoutPosition());
-                                                notifyItemChanged(baseViewHolder.getLayoutPosition());
-                                                SimpleTool.toastInThread((Activity) getContext(), "删除成功");
+                                new Thread(() -> {
+                                    if (Game.TryDelete(info.account, info.platform)) {
+                                        safeRunOnUiThread(() -> {
+                                            getData().remove(getItemPosition(info));
+                                            removeAt(getItemPosition(info));
+                                            notifyItemChanged(getItemPosition(info));
+                                            SimpleTool.toastInThread((Activity) getContext(), "删除成功");
 
-                                                // 因为需要调整逻辑，所以暂时在此处插入重启
-                                                ((SimpleApplication) SimpleApplication.getContext()).restart();
-                                            });
-                                        } else
-                                            SimpleTool.toastInThread((Activity) getContext(), "删除失败");
-                                    }
+                                            // 因为需要调整逻辑，所以暂时在此处插入重启
+                                            ((SimpleApplication) SimpleApplication.getContext()).restart();
+                                        });
+                                    } else
+                                        SimpleTool.toastInThread((Activity) getContext(), "删除失败");
                                 }).start();
                             }
                         })

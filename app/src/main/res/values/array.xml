@@ -13,13 +13,26 @@
     </string-array>
 
     <string-array name="resource_type">
-        <item>可露希尔工作室（标准内容）</item>
-        <item>kengxxiao的Github数据库（扩展内容，直连）</item>
-        <item>kengxxiao的Github数据库（扩展内容，jsdelivr线路）</item>
-        <item>kengxxiao的Github数据库（扩展内容，fastgit线路）</item>
+        <item>可露希尔工作室（标准，推荐）</item>
+        <item>已无效</item>
+        <item>已无效</item>
+        <item>已无效</item>
+    </string-array>
+
+    <string-array name="accelerateSlot_CN_type">
+        <item>底层左</item>
+        <item>底层中</item>
+        <item>底层右</item>
+        <item>中层左</item>
+        <item>中层中</item>
+        <item>中层右</item>
+        <item>顶层左</item>
+        <item>顶层中</item>
+        <item>顶层右</item>
     </string-array>
 
     <string-array name="music_type">
+        <item>无音乐</item>
         <item>视野 ♪ - 生命流</item>
         <item>夜幕 ♪ - 如我所见</item>
         <item>阴云 ♪ - Ghost Hunter</item>
@@ -30,12 +43,23 @@
         <item>秘海 ♪ - 暗潮</item>
         <item>庆典 ♪ - 大柏墟</item>
         <item>残垣 ♪ - 征兆</item>
+        <item>插曲 ♪ - Reversed time</item>
+        <item>插曲 ♪ - 愚人曲</item>
+        <item>插曲 ♪ - 湮佚诗歌</item>
+        <item>插曲 ♪ - 叙拉古人</item>
+        <item>插曲 ♪ - 殉道之人</item>
+        <item>插曲 ♪ - Speed of Light</item>
+        <item>插曲 ♪ - Operation Ashring</item>
+        <item>插曲 ♪ - Undertopia</item>
+        <item>插曲 ♪ - Across the wind</item>
+        <item>主题 ♪ - Running In the Dark</item>
     </string-array>
 
     <string-array name="music_type_id">
+        <item>-1</item>
         <item>232202</item>
         <item>夜幕 ♪ - 如我所见</item>
-        <item>阴云 ♪ - Ghost Hunter</item>
+        <item>697662</item>
         <item>125019</item>
         <item>商业 ♪ - City</item>
         <item>严冬 ♪ - Loneliness</item>
@@ -43,6 +67,16 @@
         <item>秘海 ♪ - 暗潮</item>
         <item>697667</item>
         <item>048730</item>
+        <item>779435</item>
+        <item>953915</item>
+        <item>880351</item>
+        <item>048728</item>
+        <item>125083</item>
+        <item>880374</item>
+        <item>306837</item>
+        <item>232285</item>
+        <item>953910</item>
+        <item>-100</item>
     </string-array>
 
     <string-array name="notification_style">

@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -27,6 +28,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.internal.http.BridgeInterceptor;
 
 public class HttpConnectionUtil {
     public static final String empty = "";
@@ -45,6 +47,7 @@ public class HttpConnectionUtil {
 
     public static String DownLoadTextPages(String urlStr, Map<String, String> extraRequestProperty, boolean useSSL) throws IOException {
         OkHttpClient client = new OkHttpClient();
+        // BridgeInterceptor
         if (!useSSL) client = getUnsafeOkHttpClient();
         Request.Builder builder = new Request.Builder()
                 .url(urlStr);
@@ -58,6 +61,23 @@ public class HttpConnectionUtil {
 
         assert response.body() != null;
         return response.body().string();
+    }
+
+    public static InputStream DownLoadFile(String urlStr, Map<String, String> extraRequestProperty, boolean useSSL) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        if (!useSSL) client = getUnsafeOkHttpClient();
+        Request.Builder builder = new Request.Builder()
+                .url(urlStr);
+        if (!(extraRequestProperty == null) && !extraRequestProperty.isEmpty()) {
+            for (Map.Entry<String, String> entry : extraRequestProperty.entrySet()) {
+                builder.addHeader(entry.getKey(), entry.getValue());
+            }
+        }
+        Request request = builder.build();
+        Response response = client.newCall(request).execute();
+
+        assert response.body() != null;
+        return response.body().byteStream();
     }
 
     public static String DownLoadTextPagesNoOk(String urlStr, Map<String, String> extraRequestProperty) {

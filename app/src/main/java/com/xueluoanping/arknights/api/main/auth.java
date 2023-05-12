@@ -4,7 +4,9 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.xueluoanping.arknights.SimpleApplication;
+import com.xueluoanping.arknights.api.BetterEntry;
 import com.xueluoanping.arknights.pro.HttpConnectionUtil;
 import com.xueluoanping.arknights.pro.TransCoding;
 import com.xueluoanping.arknights.pro.spTool;
@@ -53,28 +55,22 @@ public class auth {
         spTool.saveIsAdmin(isAdmin);
         spTool.saveToken(token);
     }
+    // https://ak.dzp.me/ann.json
+    public static auth.announcement isMaintaining() throws IOException,NullPointerException {
 
-    public static boolean isMaintaining() throws IOException {
-        String urlStr = "https://ak.dzp.me/ann.json";
+        String urlStr = host.getQuickestHost()+"/Common/Announcement";
         String announcement=HttpConnectionUtil.DownLoadTextPages(urlStr,null,true);
-        return  new Gson().fromJson(announcement, auth.announcement.class).isMaintain;
+        Gson g= new Gson();
+        auth.announcement a= new Gson().fromJson(g.fromJson(announcement, JsonObject.class).getAsJsonObject("data"), auth.announcement.class);
+        return a ;
     }
 
 
     public static class announcement {
-
-        private double updated_at;
         private String announcement;
-        private boolean allowgamelogin;
-        private boolean allowlogin;
+        private boolean allowLogin;
+        private boolean allowGameLogin;
         private boolean isMaintain;
-        public void setUpdated_at(double updated_at) {
-            this.updated_at = updated_at;
-        }
-        public double getUpdated_at() {
-            return updated_at;
-        }
-
         public void setAnnouncement(String announcement) {
             this.announcement = announcement;
         }
@@ -82,18 +78,18 @@ public class auth {
             return announcement;
         }
 
-        public void setAllowgamelogin(boolean allowgamelogin) {
-            this.allowgamelogin = allowgamelogin;
+        public void setAllowLogin(boolean allowLogin) {
+            this.allowLogin = allowLogin;
         }
-        public boolean getAllowgamelogin() {
-            return allowgamelogin;
+        public boolean getAllowLogin() {
+            return allowLogin;
         }
 
-        public void setAllowlogin(boolean allowlogin) {
-            this.allowlogin = allowlogin;
+        public void setAllowGameLogin(boolean allowGameLogin) {
+            this.allowGameLogin = allowGameLogin;
         }
-        public boolean getAllowlogin() {
-            return allowlogin;
+        public boolean getAllowGameLogin() {
+            return allowGameLogin;
         }
 
         public void setIsMaintain(boolean isMaintain) {

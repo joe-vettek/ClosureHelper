@@ -29,14 +29,14 @@ public class GameLogAdapter extends BaseQuickAdapter<GameLog, BaseViewHolder> {
         baseViewHolder.setText(R.id.iv_ts, detail.getTs())
                 .setText(R.id.tv_info, detail.getInfo());
         // setColor(baseViewHolder, R.color.limegreen);
-        if (detail.getInfo().matches(regex))
+        if (detail.getInfo().matches(regex4))
+            setColor(baseViewHolder, R.color.goldenrod);
+      else  if (detail.getInfo().matches(regex))
             setColor(baseViewHolder, R.color.limegreen);
         else if (detail.getInfo().matches(regex2))
             setColor(baseViewHolder, R.color.darkturquoise);
         else if (detail.getInfo().matches(regex3))
             setColor(baseViewHolder, R.color.darkred);
-        else if (detail.getInfo().matches(regex4))
-            setColor(baseViewHolder, R.color.goldenrod);
         else if (detail.getInfo().matches(regex5))
             setColor(baseViewHolder, R.color.pink_pressed);
 

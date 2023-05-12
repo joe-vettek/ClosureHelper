@@ -52,10 +52,6 @@
             android:exported="false"
             android:theme="@style/AppTheme.NoActionBar.AutumnDuck" />
         <activity
-            android:name=".pages.AccountMangerActivity"
-            android:exported="false"
-            android:theme="@style/AppTheme.NoActionBar.AutumnDuck" />
-        <activity
             android:name=".pages.GameSettingsActivity"
             android:exported="false"
             android:theme="@style/AppTheme.NoActionBar.AutumnDuck" />

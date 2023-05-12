@@ -82,7 +82,6 @@ public class SimpleApplication extends Application {
         String versionFileName = "data/data_version.txt";
         String itemTableFileName = "data/item_table.json";
         String stageTableFileName = "data/stage_table.json";
-        String characterTableFileName = "data/character_table.json";
         String itemNameTableFileName = "data/item_name_table.json";
         File file = new File(baseUrl + versionFileName);
         if (!file.exists()) {
@@ -109,16 +108,6 @@ public class SimpleApplication extends Application {
             try {
                 String vText = SimpleTool.getStringAssents(stageTableFileName);
                 ToolFile.saveTextFile(getContext(), vText, stageTableFileName);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.d(TAG, "checkArknightsDataVersion: " + file.getAbsolutePath());
-            }
-        }
-        file = new File(baseUrl + characterTableFileName);
-        if (!file.exists()) {
-            try {
-                String vText = SimpleTool.getStringAssents(characterTableFileName);
-                ToolFile.saveTextFile(getContext(), vText, characterTableFileName);
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.d(TAG, "checkArknightsDataVersion: " + file.getAbsolutePath());

@@ -24,6 +24,7 @@ import com.xueluoanping.arknights.SimpleApplication;
 import com.xueluoanping.arknights.api.BetterEntry;
 import com.xueluoanping.arknights.api.main.Game;
 import com.xueluoanping.arknights.api.main.host;
+import com.xueluoanping.arknights.base.BaseActivity;
 import com.xueluoanping.arknights.base.BaseFragment;
 import com.xueluoanping.arknights.custom.GameInfo.InfoAdapter;
 import com.xueluoanping.arknights.internal.SplashView;
@@ -45,7 +46,8 @@ public class AccountMangerFragment extends BaseFragment implements FragmentWithN
     private List<Game.GameInfo> infoList = new ArrayList<>();
 
     private boolean needRefresh = false;
-    private boolean isMaintaining=false;
+    private boolean isMaintaining = false;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -121,6 +123,10 @@ public class AccountMangerFragment extends BaseFragment implements FragmentWithN
         tv_errorNet.setVisibility(View.VISIBLE);
         ac_splash.pauseSplash();
         needRefresh = true;
+        // safeRunOnUiThread(()->{
+        //     if(getActivity() instanceof BaseActivity)
+        //         ((BaseActivity) getActivity()).queryArknightsIsMaintaining();
+        // });
         SimpleTool.toastInThread(getActivity(), "网络故障，请重试");
     }
 
@@ -136,9 +142,9 @@ public class AccountMangerFragment extends BaseFragment implements FragmentWithN
             hideNetWorkError();
             // 等待设置好之后再加载数据
             new Thread(() -> {
-                BetterEntry<Integer,Integer> t = host.trySetQuickestHost(3000);
+                BetterEntry<Integer, Integer> t = host.trySetQuickestHost(3000);
                 if (t.getKey() > 0) {
-                    SimpleTool.toastInThread(getActivity(), String.format("连接成功，当前最小延迟为%sms，使用线路-%s",t.getKey(),getResources().getStringArray(R.array.line_type)[t.getValue()]));
+                    SimpleTool.toastInThread(getActivity(), String.format("连接成功，当前最小延迟为%sms，使用线路-%s", t.getKey(), getResources().getStringArray(R.array.line_type)[t.getValue()]));
                     getData();
                 } else safeRunOnUiThread(this::showNetWorkError);
             }).start();
@@ -163,37 +169,35 @@ public class AccountMangerFragment extends BaseFragment implements FragmentWithN
                             String account = ((EditText) root.findViewById(R.id.dg_et_user)).getText().toString();
                             String password = ((EditText) root.findViewById(R.id.dg_et_password)).getText().toString();
                             int finalPlatform = platform;
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (Game.TryAdd(account, password, finalPlatform)) {
-                                        Game.GameInfo info = new Game.GameInfo();
-                                        info.account = account;
-                                        info.platform = finalPlatform;
-                                        info.code = Game.WebGame_Status_Code_NeedLogin;
-                                        info.status = "游戏未启动";
-                                        try {
-                                            infoList.add(info);
-                                            safeRunOnUiThread(() -> {
-                                                ad_accountList.setList(infoList);
-                                                // ad_accountList.notifyDataSetChanged();
-                                                dialogInterface.dismiss();
+                            new Thread(() -> {
+                                BetterEntry<Boolean, String> ee = Game.TryAdd(account, password, finalPlatform);
+                                if (ee.getKey()) {
+                                    Game.GameInfo info = new Game.GameInfo();
+                                    info.account = account;
+                                    info.platform = finalPlatform;
+                                    info.code = Game.WebGame_Status_Code_NeedLogin;
+                                    info.status = "游戏未启动";
+                                    try {
+                                        infoList.add(info);
+                                        safeRunOnUiThread(() -> {
+                                            ad_accountList.setList(infoList);
+                                            // ad_accountList.notifyDataSetChanged();
+                                            dialogInterface.dismiss();
 
-                                                // 因为需要调整逻辑，所以暂时在此处插入重启
-                                                ((SimpleApplication) SimpleApplication.getContext()).restart();
-                                            });
+                                            // 因为需要调整逻辑，所以暂时在此处插入重启
+                                            ((SimpleApplication) SimpleApplication.getContext()).restart();
+                                        });
 
-                                            SimpleTool.toastInThread(getActivity(), "添加成功");
+                                        SimpleTool.toastInThread(getActivity(), "添加成功");
 
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                            SimpleTool.toastInThread(getActivity(), "添加失败");
-                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        SimpleTool.toastInThread(getActivity(), "添加失败");
+                                    }
 
 
-                                    } else
-                                        SimpleTool.toastInThread(getActivity(), "账号密码或网络错误");
-                                }
+                                } else
+                                    SimpleTool.toastInThread(getActivity(), ee.getValue());
                             }).start();
                         }
                     });
@@ -223,7 +227,7 @@ public class AccountMangerFragment extends BaseFragment implements FragmentWithN
 
     private void loadData() {
         //创建布局管理
-        LinearLayoutManager layoutManager = new LinearLayoutManager(SimpleApplication.getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rc_accountList.setLayoutManager(layoutManager);
         //        View view = LayoutInflater.from(this).inflate(R.layout.item_hr_diary, null);
