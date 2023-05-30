@@ -16,6 +16,7 @@ allprojects {
         google()
         jcenter()
         // Other
+        maven { url 'https://maven.fpregistry.io/releases' }
         maven {url 'https://jitpack.io'}
 
     }

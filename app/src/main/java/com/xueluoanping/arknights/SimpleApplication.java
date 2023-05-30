@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.lxj.xpopup.XPopup;
+import com.xueluoanping.arknights.api.main.auth;
 import com.xueluoanping.arknights.api.main.host;
 import com.xueluoanping.arknights.api.resource.Kengxxiao;
 import com.xueluoanping.arknights.api.tool.ToolFile;
@@ -48,6 +49,7 @@ public class SimpleApplication extends Application {
         super.onCreate();
         context = this;
 
+        auth.initVisitorId();
         // 初始化地址
         int line = spTool.getLineSelect();
         if (line == 0)
