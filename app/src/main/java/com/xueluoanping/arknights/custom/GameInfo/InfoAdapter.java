@@ -112,126 +112,120 @@ public class InfoAdapter extends BaseQuickAdapter<Game.GameInfo, BaseViewHolder>
         }).start();
 
 
-        sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                // 改变状态必然由启动到终止
+        sw.setOnCheckedChangeListener((compoundButton, b) -> {
+            // 改变状态必然由启动到终止
 
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (b) {
-                            Game.TryLogin(getContext(), info.account, info.platform);
-                            SimpleTool.toastInThread((Activity) getContext(), "尝试登录中");
-                            info.status = "尝试登陆中";
-                            info.code = Game.WebGame_Status_Code_Loginning;
+            new Thread(() -> {
+                if (b) {
+                    Game.TryLogin((Activity) getContext(), info.account, info.platform);
+                    SimpleTool.toastInThread((Activity) getContext(), "尝试登录中");
+                    info.status = "尝试登陆中";
+                    info.code = Game.WebGame_Status_Code_Loginning;
 
-                            // getData().set(getData().indexOf(info), info);
+                    // getData().set(getData().indexOf(info), info);
 
-                            safeRunOnUiThread(() -> {
-                                notifyItemChanged(getItemPosition(info));
-                            });
-                            Timer timer = new Timer();
-                            long cacheTime = ToolTime.getTimeShanghai();
-                            timer.schedule(new TimerTask() {
+                    safeRunOnUiThread(() -> {
+                        notifyItemChanged(getItemPosition(info));
+                    });
+                    Timer timer = new Timer();
+                    long cacheTime = ToolTime.getTimeShanghai();
+                    timer.schedule(new TimerTask() {
 
-                                @Override
-                                public void run() {
+                        @Override
+                        public void run() {
 
-                                    try {
-                                        Game.GameInfo info1 = info.getEqualNewInstance(Game.getGameStatue(getContext()));
-
-                                        int code = info1.code;
-                                        // if(code==Game.WebGame_Status_Code_ErrorLogin)
-                                        // {
-                                        //
-                                        // }else
-                                        if (code == Game.WebGame_Status_Code_Running) {
-                                            long nowTime = ToolTime.getTimeShanghai();
-                                            double duration = (nowTime - cacheTime) / 1000.0d;
-                                            Log.d(TAG, "run: " + "登录完成，共耗时" + duration + "s");
-                                            SimpleTool.toastInThread((Activity) getContext(), "登录完成，共耗时" + duration + "s");
-                                            synchronized (timer) {
-                                                timer.cancel();
-                                                timer.purge();
-                                            }
-
-                                            // setData(baseViewHolder.getLayoutPosition(), info1);
-                                        } else if (code == Game.WebGame_Status_Code_NeedCheck) {
-
-                                            SimpleTool.toastInThread((Activity) getContext(), "暂时请访问可露希尔网页进行手动确认，也可以通知开发者提供信息帮助完成这一功能");
-                                            SimpleTool.toastInThread((Activity) getContext(), "验证完成后请自行刷新。");
-                                            if (!info1.challenge.equals(info.challenge)) {
-                                                Intent ii = new Intent(getContext(), CheckActivity.class);
-                                                ii.putExtra("challenge", info1.challenge);
-                                                ii.putExtra("gt", info1.gt);
-                                                ii.putExtra("account", info1.account);
-                                                ii.putExtra("platform", info1.platform);
-                                                getContext().startActivity(ii);
-                                                synchronized (timer) {
-                                                    timer.cancel();
-                                                }
-                                            }
-
-
-                                        }
-                                        // (code == Game.WebGame_Status_Code_Loginning)
-                                        // else {
-                                        //     setData(baseViewHolder.getLayoutPosition(), info1);
-                                        // }
-                                        setData(getItemPosition(info), info1);
-                                        if (code == Game.WebGame_Status_Code_ErrorLogin || (info.code != info1.code && !info.status.equals(info1.status)))
-                                            safeRunOnUiThread(() -> {
-                                                notifyItemChanged(getItemPosition(info));
-                                                Log.d(TAG, "run: getGameStatue");
-                                            });
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }, 5000, 5000);
-
-                        }
-                        // else
-                        // toastInThread("请访问可露希尔工作室进行检查或者更换网络！");
-
-                        else {
                             try {
-                                Game.GameSettings gameSettings = Game.getGameSettings(info);
-                                gameSettings.isStopped = true;
-                                if (Game.updateGameSettings(
-                                        info, gameSettings)) {
-                                    SimpleTool.toastInThread((Activity) getContext(), "更新成功！");
-                                    Game.GameInfo[] infos = Game.getGameStatue(getContext());
-                                    for (int i = 0; i < infos.length; i++) {
-                                        if (info.account.equals(infos[i].account)
-                                                && info.platform == infos[i].platform) {
-                                            getData().set(i, infos[i]);
-                                            int finalI = i;
-                                            safeRunOnUiThread(() -> {notifyItemChanged(finalI);});
-                                            break;
+                                Game.GameInfo info1 = info.getEqualNewInstance(Game.getGameStatue(getContext()));
+
+                                int code = info1.code;
+                                // if(code==Game.WebGame_Status_Code_ErrorLogin)
+                                // {
+                                //
+                                // }else
+                                if (code == Game.WebGame_Status_Code_Running) {
+                                    long nowTime = ToolTime.getTimeShanghai();
+                                    double duration = (nowTime - cacheTime) / 1000.0d;
+                                    Log.d(TAG, "run: " + "登录完成，共耗时" + duration + "s");
+                                    SimpleTool.toastInThread((Activity) getContext(), "登录完成，共耗时" + duration + "s");
+                                    synchronized (timer) {
+                                        timer.cancel();
+                                        timer.purge();
+                                    }
+
+                                    // setData(baseViewHolder.getLayoutPosition(), info1);
+                                } else if (code == Game.WebGame_Status_Code_NeedCheck) {
+
+                                    SimpleTool.toastInThread((Activity) getContext(), "暂时请访问可露希尔网页进行手动确认，也可以通知开发者提供信息帮助完成这一功能");
+                                    SimpleTool.toastInThread((Activity) getContext(), "验证完成后请自行刷新。");
+                                    if (!info1.challenge.equals(info.challenge)) {
+                                        Intent ii = new Intent(getContext(), CheckActivity.class);
+                                        ii.putExtra("challenge", info1.challenge);
+                                        ii.putExtra("gt", info1.gt);
+                                        ii.putExtra("account", info1.account);
+                                        ii.putExtra("platform", info1.platform);
+                                        getContext().startActivity(ii);
+                                        synchronized (timer) {
+                                            timer.cancel();
                                         }
                                     }
 
 
-                                } else {
-                                    SimpleTool.toastInThread((Activity) getContext(), "网络有误，请重试！");
                                 }
-                            } catch (IOException | JSONException e) {
+                                // (code == Game.WebGame_Status_Code_Loginning)
+                                // else {
+                                //     setData(baseViewHolder.getLayoutPosition(), info1);
+                                // }
+                                setData(getItemPosition(info), info1);
+                                if (code == Game.WebGame_Status_Code_ErrorLogin || (info.code != info1.code && !info.status.equals(info1.status)))
+                                    safeRunOnUiThread(() -> {
+                                        notifyItemChanged(getItemPosition(info));
+                                        Log.d(TAG, "run: getGameStatue");
+                                    });
+                            } catch (Exception e) {
                                 e.printStackTrace();
-                                SimpleTool.toastInThread((Activity) getContext(), "网络有误，请重试！");
                             }
-                            // try {
-                            //     Game.getGameSettings(info).isStopped = true;
-                            // } catch (JSONException | IOException e) {
-                            //     e.printStackTrace();
-                            // }
                         }
+                    }, 5000, 5000);
+
+                }
+                // else
+                // toastInThread("请访问可露希尔工作室进行检查或者更换网络！");
+
+                else {
+                    try {
+                        Game.GameSettings gameSettings = Game.getGameSettings(info);
+                        gameSettings.isStopped = true;
+                        if (Game.updateGameSettings(
+                                info, gameSettings)) {
+                            SimpleTool.toastInThread((Activity) getContext(), "更新成功！");
+                            Game.GameInfo[] infos = Game.getGameStatue(getContext());
+                            for (int i = 0; i < infos.length; i++) {
+                                if (info.account.equals(infos[i].account)
+                                        && info.platform == infos[i].platform) {
+                                    getData().set(i, infos[i]);
+                                    int finalI = i;
+                                    safeRunOnUiThread(() -> {notifyItemChanged(finalI);});
+                                    break;
+                                }
+                            }
+
+
+                        } else {
+                            SimpleTool.toastInThread((Activity) getContext(), "网络有误，请重试！");
+                        }
+                    } catch (IOException | JSONException e) {
+                        e.printStackTrace();
+                        SimpleTool.toastInThread((Activity) getContext(), "网络有误，请重试！");
                     }
-                }).start();
+                    // try {
+                    //     Game.getGameSettings(info).isStopped = true;
+                    // } catch (JSONException | IOException e) {
+                    //     e.printStackTrace();
+                    // }
+                }
+            }).start();
 
 
-            }
         });
 
         bt.setOnClickListener(new View.OnClickListener() {

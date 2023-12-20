@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 图片 -->
+<!--    <item>-->
+<!--        <bitmap android:src="@mipmap/show4" />-->
+<!--    </item>-->
+
+    <!-- 黑色边框 -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#00000000" />
+            <stroke
+                android:width="1dp"
+                android:color="?attr/colorPrimary" />
+        </shape>
+    </item>
+
+</layer-list>

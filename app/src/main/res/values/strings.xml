@@ -8,8 +8,7 @@
     <string name="userNameHintText">邮箱</string>
     <string name="userAccountHintText">账户名</string>
     <string name="timeoutText">
-        加载中，若第一次登录和需要重新加载请点击屏幕右上角重载或重启app，更换可露希尔账户请清理数据后重新登录。
-        点击小按钮可以选择账户或其他设置</string>
+        加载中，点击头像可以调整账号设置</string>
     <string name="rightText">本APP由可露希尔工作室提供API支持。\n注册账号请访问<a href="https://arknights.host/">可露希尔工作室</a>网页版本。</string>
     <string name="AnnouncementText">衷心感谢老板【三天两觉】赞助的服务器。计划将执行数据库删档操作，请用户及时备份数据以防意外发生</string>
     <string name="gameSetting_changeShift">是否基建排版</string>

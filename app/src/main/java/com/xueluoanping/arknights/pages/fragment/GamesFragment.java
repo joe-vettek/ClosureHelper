@@ -2,12 +2,18 @@ package com.xueluoanping.arknights.pages.fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
+import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +41,7 @@ import com.xueluoanping.arknights.api.main.Data;
 import com.xueluoanping.arknights.api.main.Game;
 import com.xueluoanping.arknights.api.resource.dzp;
 import com.xueluoanping.arknights.api.tool.ToolTable;
+import com.xueluoanping.arknights.api.tool.ToolTheme;
 import com.xueluoanping.arknights.api.tool.ToolTime;
 import com.xueluoanping.arknights.base.BaseActivity;
 import com.xueluoanping.arknights.base.BaseFragment;
@@ -67,6 +74,7 @@ import java.util.TimerTask;
 public class GamesFragment extends BaseFragment implements FragmentWithName {
     private static final String TAG = GamesFragment.class.getSimpleName();
     private ImageView imageView;
+    private ImageView imageView_state;
     private TextView textView;
     private ArrayList<ItemModel> datas = new ArrayList<>();
     private ArrayList<ItemModel> datas2 = new ArrayList<>();
@@ -76,6 +84,7 @@ public class GamesFragment extends BaseFragment implements FragmentWithName {
     private Button bt_inventory;
     private Button bt_screenshot;
     private NestedScrollView nsv1;
+    private TextView t13;
     private TextView t14;
     private String name;
     private Game.GameInfo gameInstanceInfo;
@@ -103,10 +112,12 @@ public class GamesFragment extends BaseFragment implements FragmentWithName {
         View root = inflater.inflate(R.layout.activity_main, container, false);
         nsv1 = root.findViewById(R.id.nsv1);
         imageView = root.findViewById(R.id.iv_secretary);
+        imageView_state = root.findViewById(R.id.iv_secretary_status);
         textView = root.findViewById(R.id.textView12);
         recyclerView_log = root.findViewById(R.id.logList);
         bt_inventory = root.findViewById(R.id.bt_inventory);
         bt_screenshot = root.findViewById(R.id.bt_screenshot);
+        t13 = root.findViewById(R.id.textView13);
         t14 = root.findViewById(R.id.textView14);
 
         t_gold = root.findViewById(R.id.t_gold);
@@ -293,8 +304,10 @@ public class GamesFragment extends BaseFragment implements FragmentWithName {
         datas2.clear();
         datas_log.clear();
         safeRunOnUiThread(() -> {
-            alertTextView("\n\n\n\n\n\n" + getText(R.string.timeoutText).toString());
+            alertTextView(getText(R.string.timeoutText).toString());
             alertTextView2("");
+            t13.setVisibility(View.INVISIBLE);
+            t14.setVisibility(View.INVISIBLE);
         });
 
         // if (!
@@ -324,7 +337,7 @@ public class GamesFragment extends BaseFragment implements FragmentWithName {
 
     public void alertTextView2(String s) {
         safeRunOnUiThread(() -> {
-            t14.setText(s);
+            t13.setText(s);
         });
     }
 
@@ -342,144 +355,200 @@ public class GamesFragment extends BaseFragment implements FragmentWithName {
                     Game.GameInfo game0 = GamesFragment.this.gameInstanceInfo;
                     JsonObject stageTable = ToolTable.getInstance().getStageTable();
                     JsonObject stageJsonObject = stageTable.has(game0.mapId) ? stageTable.getAsJsonObject(game0.mapId) : null;
+                    Log.d(TAG, "run: " + game0.code);
+                    safeRunOnUiThread(() -> {
+                        safeRunOnUiThread(() -> {
+                            t13.setVisibility(View.VISIBLE);
+                            t14.setVisibility(View.VISIBLE);
+                        });
+
+                        try {
+                            switch (game0.code) {
+                                case Game.WebGame_Status_Code_Running:
+                                    imageView_state.setImageDrawable(getContext().getDrawable(R.drawable.pot_green));
+                                    break;
+                                case Game.WebGame_Status_Code_NeedCheck:
+                                    imageView_state.setImageDrawable(getContext().getDrawable(R.drawable.pot_orange));
+                                    break;
+                                case Game.WebGame_Status_Code_Loginning:
+                                    imageView_state.setImageDrawable(getContext().getDrawable(R.drawable.pot_yellow));
+                                    break;
+                                // case Game.WebGame_Status_Code_Running:
+                                //     imageView_state.setImageDrawable(getContext().getDrawable(R.drawable.pot_red));
+                                //     break;
+                                default:
+                                    imageView_state.setImageDrawable(getContext().getDrawable(R.drawable.pot_red));
+                                    break;
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
 
                     BetterEntry<String, String> main =
                             stageJsonObject == null ?
-                                    new BetterEntry<>("状态：" + game0.status, "\n战斗地图：" + game0.mapId) :
-                                    new BetterEntry<>("状态：" + game0.status,
-                                            "\n战斗地图：" + stageJsonObject.get("code").getAsString() + "(" + stageJsonObject.get("name").getAsString() + ")");
+                                    new BetterEntry<>(game0.status, game0.mapId) :
+                                    new BetterEntry<>(game0.status, stageJsonObject.get("code").getAsString() + "(" + stageJsonObject.get("name").getAsString() + ")");
 
 
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            datas_log = Game.getLog(game0.account, game0.platform);
-                            // 加载日志
-                            safeRunOnUiThread(() -> {
-                                alertButtonVisibility(false);
-                                loadData_Log();
+                    new Thread(() -> {
+                        datas_log = Game.getLog(game0.account, game0.platform);
+                        // 加载日志
+                        safeRunOnUiThread(() -> {
+                            alertButtonVisibility(false);
+                            loadData_Log();
+                        });
+                        // 分析是否有高星
+                        new Thread(() -> {
+                            if (datas_log.size() == 0) return;
+                            long tNew = datas_log.get(datas_log.size() - 1).ts0;
+                            Set<String> set = spTool.getNewOperatorTimeSet();
+                            // boolean needClean = false;
+                            final long[] t00 = {0};
+                            set.forEach(s -> {
+                                try {
+                                    long tOld = Long.parseLong(s);
+                                    if (tOld > t00[0]) {
+                                        t00[0] = tOld;
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             });
-                            // 分析是否有高星
-                            new Thread(() -> {
-                                if(datas_log.size()==0)return;
-                                long tNew=datas_log.get(datas_log.size()-1).ts0;
-                                Set<String> set=spTool.getNewOperatorTimeSet();
-                                // boolean needClean = false;
-                                final long[] t00 = {0};
-                                set.forEach(s -> {
-                                    try {
-                                        long tOld=Long.parseLong(s);
-                                        if(tOld> t00[0]){
-                                            t00[0] =tOld;
-                                        }
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
+                            if (t00[0] < tNew) {
+                                set = new HashSet<>();
+                                spTool.cleanNewOperatorTimeSet();
+                            }
+                            Set<String> finalSet = set;
+                            datas_log.forEach((gameLog -> {
+                                String regex4 = ".*5★.*|.*6★.*";
+                                if (gameLog.getInfo().matches(regex4)) {
+                                    boolean hasInformed = finalSet.contains(gameLog.ts0 + "");
+                                    if (hasInformed) return;
+
+                                    String y = gameLog.getInfo().matches(".*5★.*") ? "五星" : "六星";
+                                    String x = SimpleTool.protectTelephoneNum(GamesFragment.this.gameInstanceInfo.account) + "于" + ToolTime.getFormatDate(gameLog.ts0, false) + "出现" + y + "干员！";
+                                    toastInThread(x);
+                                    notifyUser(SimpleTool.protectTelephoneNum(GamesFragment.this.gameInstanceInfo.account), "于" + ToolTime.getFormatDate(gameLog.ts0, false) + "有" + y + "干员出现了");
+                                    spTool.addNewOperatorTime(gameLog.ts0 + "");
+                                }
+                            }));
+                        }).start();
+
+                        // 分析作战情况
+                        new Thread(() -> {
+                            if (datas_log.size() == 0) return;
+                            BetterEntry<Long, Map<String, Integer>> entry = parsingLogsToInfo(datas_log);
+                            Map<String, Integer> collectMaps = entry.getValue();
+
+                            // StringBuilder ss = new StringBuilder();
+                            if (ToolTime.getTimeShanghai() - datas_log.get(0).ts0 < 10 * 60 * 1000 ||
+                                    entry.getKey() - ToolTime.getTimeShanghai() < 8 * 60 * 1000) {
+                                String t00 = textView.getText().toString();
+                                safeRunOnUiThread(() -> {
+                                    textView.setText(t00.replace("托管", "运行"));
                                 });
-                                if(t00[0]<tNew){
-                                    set=new HashSet<>();
-                                    spTool.cleanNewOperatorTimeSet();
-                                }
-                                Set<String> finalSet = set;
-                                datas_log.forEach((gameLog -> {
-                                    String regex4 = ".*5★.*|.*6★.*";
-                                    if (gameLog.getInfo().matches(regex4)) {
-                                        boolean hasInformed = finalSet.contains(gameLog.ts0 + "");
-                                        if (hasInformed) return;
+                            }
+                            float time = (ToolTime.getTimeShanghai() * 1.0f - datas_log.get(datas_log.size() - 1).ts0) / 1000f / 3600f;
+                            Log.d(TAG, "run: 计算托管时间" + time + "," + ToolTime.getTimeShanghai());
+                            String c000 = (entry.getKey() > 0 ? "下次运行时间：" + ToolTime.getFormatDate(entry.getKey(), false) : "下次运行时间：未知")
+                                    + "\n托管时长：%.1f小时";
+                            c000 = String.format(Locale.CHINA, c000, time);
+                            //创建一个 SpannableStringBuilder
+                            SpannableStringBuilder spannableStringBuilder0 = new SpannableStringBuilder();
 
-                                        String y = gameLog.getInfo().matches(".*5★.*") ? "五星" : "六星";
-                                        String x = SimpleTool.protectTelephoneNum(GamesFragment.this.gameInstanceInfo.account) + "于" + ToolTime.getFormatDate(gameLog.ts0, false) + "出现" + y + "干员！";
-                                        toastInThread(x);
-                                        notifyUser(SimpleTool.protectTelephoneNum(GamesFragment.this.gameInstanceInfo.account), "于" + ToolTime.getFormatDate(gameLog.ts0, false) + "有" + y + "干员出现了");
-                                        spTool.addNewOperatorTime(gameLog.ts0 + "");
-                                    }
-                                }));
-                            }).start();
+                            SpannableString spannableString0 = new SpannableString("下次运行时间 \n");
+                            //设置字体大小（相对值,单位：像素） 参数表示为默认字体宽度的多少倍
+                            spannableString0.setSpan(new RelativeSizeSpan(0.67f), 0, spannableString0.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            spannableString0.setSpan(new StyleSpan(Typeface.NORMAL), 0, spannableString0.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                            // 分析作战情况
-                            new Thread(() -> {
-                                if (datas_log.size() == 0) return;
-                                BetterEntry<Long, Map<String, Integer>> entry = parsingLogsToInfo(datas_log);
-                                Map<String, Integer> collectMaps = entry.getValue();
+                            //设置字体大小（绝对值,单位：像素）
+                            // spannableString.setSpan(new TextAppearanceSpan(null, 0, 50, null, null), 2, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            //将SpannableStringBuilder设置给TextView
+                            spannableStringBuilder0.append(spannableString0);
+                            spannableStringBuilder0.append(ToolTheme.createColorText(entry.getKey() > 0 ? ToolTime.getFormatDate(entry.getKey(), false) : "未知", getContext().getColor(R.color.text_black)));
 
-                                // StringBuilder ss = new StringBuilder();
-                                if (ToolTime.getTimeShanghai() - datas_log.get(0).ts0 < 10 * 60 * 1000 ||
-                                        entry.getKey() - ToolTime.getTimeShanghai() < 8 * 60 * 1000) {
-                                    String t00 = textView.getText().toString();
-                                    safeRunOnUiThread(() -> {
-                                        textView.setText(t00.replace("托管", "运行"));
-                                    });
-                                }
-                                float time = (ToolTime.getTimeShanghai() * 1.0f - datas_log.get(datas_log.size() - 1).ts0) / 1000f / 3600f;
-                                Log.d(TAG, "run: 计算托管时间" + time + "," + ToolTime.getTimeShanghai());
-                                String c000 = (entry.getKey() > 0 ? "下次运行时间：" + ToolTime.getFormatDate(entry.getKey(), false) : "下次运行时间：未知")
-                                        + "\n托管时长：%.1f小时\n";
-                                c000 = String.format(Locale.CHINA, c000, time);
-                                SpannableStringBuilder ssb = new SpannableStringBuilder(c000 + "今日收益：");
-                                collectMaps.forEach((name, amount) -> {
-                                            // building_data 家具数据在这里，暂时不引入，因为没有数据
-                                            boolean flag = name.matches(".*家具.*|.*未识别.*") && !name.contains("家具零件");
-                                            if (flag) {
-                                                // name = name.replace("家具]", "");
-                                                name = "[" + name;
-                                            }
-                                            String text0 = name + "：" + amount + "；";
-                                            // ss.append(text0);
-                                            SpannableString spannableString = new SpannableString(text0);
-                                            if (!flag) {
-                                                String url = dzp.getItemIconUrl(name);
-                                                UrlImageSpan imageSpan = new UrlImageSpan(getContext(), url + "", name, t14, amount);
-                                                spannableString.setSpan(imageSpan, 0, text0.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                                                String clickHint = name + "（共" + amount + "个）";
-                                                ClickableSpan clickableSpan = new ClickableSpan() {
-                                                    @Override
-                                                    public void onClick(@NonNull View widget) {
-                                                        toastInThread(clickHint);
-                                                    }
-                                                };
-                                                spannableString.setSpan(clickableSpan, 0, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                            } else {
-                                                UrlImageSpan imageSpan = new UrlImageSpan(getContext(), name, name, t14, amount);
-                                                spannableString.setSpan(imageSpan, 0, text0.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            SpannableString spannableString1 = new SpannableString("\n\n");
+                            //设置字体大小（相对值,单位：像素） 参数表示为默认字体宽度的多少倍
+                            spannableString1.setSpan(new RelativeSizeSpan(0.5f), 0, spannableString1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            spannableString1.setSpan(new StyleSpan(Typeface.NORMAL), 0, spannableString1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            spannableStringBuilder0.append(spannableString1);
+                            SpannableString spannableString2 = new SpannableString("托管时长 \n");
+                            //设置字体大小（相对值,单位：像素） 参数表示为默认字体宽度的多少倍
+                            spannableString2.setSpan(new RelativeSizeSpan(0.67f), 0, spannableString2.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            spannableString2.setSpan(new StyleSpan(Typeface.NORMAL), 0, spannableString2.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            spannableStringBuilder0.append(spannableString2);
+                            spannableStringBuilder0.append(ToolTheme.createColorText(String.format(Locale.CHINA, "%.1f小时", time), getContext().getColor(R.color.text_black)));
+                            safeRunOnUiThread(() -> {t13.setText(spannableStringBuilder0);});
 
-                                                String clickHint = name + "（共" + amount + "个）";
-                                                ClickableSpan clickableSpan = new ClickableSpan() {
-                                                    @Override
-                                                    public void onClick(@NonNull View widget) {
-                                                        toastInThread(clickHint);
-                                                    }
-                                                };
-                                                spannableString.setSpan(clickableSpan, 0, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                            }
-                                            ssb.append(spannableString);
+                            // alertTextView2(c000);
+                            //今日收益：
+                            SpannableStringBuilder ssb = new SpannableStringBuilder("");
+                            collectMaps.forEach((name, amount) -> {
+                                        // building_data 家具数据在这里，暂时不引入，因为没有数据
+                                        boolean flag = name.matches(".*家具.*|.*未识别.*") && !name.contains("家具零件");
+                                        if (flag) {
+                                            // name = name.replace("家具]", "");
+                                            name = "[" + name;
                                         }
-                                );
-                                if (collectMaps.size() == 0) ssb.append("暂无;");
+                                        String text0 = name + "：" + amount + "；";
+                                        // ss.append(text0);
+                                        SpannableString spannableString = new SpannableString(text0);
+                                        if (!flag) {
+                                            String url = dzp.getItemIconUrl(name);
+                                            UrlImageSpan imageSpan = new UrlImageSpan(getContext(), url + "", name, t14, amount);
+                                            spannableString.setSpan(imageSpan, 0, text0.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                                if (ssb.length() > 5) {
-                                    // String ssString = ss.substring(0, ss.length() - 1);
-                                    safeRunOnUiThread(() -> {
-                                        // t14.setText("今日收益：" + ssString);
+                                            String clickHint = name + "（共" + amount + "个）";
+                                            ClickableSpan clickableSpan = new ClickableSpan() {
+                                                @Override
+                                                public void onClick(@NonNull View widget) {
+                                                    toastInThread(clickHint);
+                                                }
+                                            };
+                                            spannableString.setSpan(clickableSpan, 0, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                        } else {
+                                            UrlImageSpan imageSpan = new UrlImageSpan(getContext(), name, name, t14, amount);
+                                            spannableString.setSpan(imageSpan, 0, text0.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                                        t14.setText((SpannableStringBuilder) ssb.subSequence(0, ssb.length() - 1));
-                                    });
-                                }
+                                            String clickHint = name + "（共" + amount + "个）";
+                                            ClickableSpan clickableSpan = new ClickableSpan() {
+                                                @Override
+                                                public void onClick(@NonNull View widget) {
+                                                    toastInThread(clickHint);
+                                                }
+                                            };
+                                            spannableString.setSpan(clickableSpan, 0, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                        }
+                                        ssb.append(spannableString);
+                                    }
+                            );
+                            if (collectMaps.size() == 0) ssb.append("暂无;");
 
-                            }).start();
-                        }
+                            if (ssb.length() > 5) {
+                                // String ssString = ss.substring(0, ss.length() - 1);
+                                safeRunOnUiThread(() -> {
+                                    // t14.setText("今日收益：" + ssString);
+                                    // t14.setVisibility(View.VISIBLE);
+                                    t14.setText(ssb.subSequence(0, ssb.length() - 1));
+
+                                });
+                            }
+
+                        }).start();
                     }).start();
 
                     // 只有运行状态才进行
                     if (game0.code != Game.WebGame_Status_Code_Running && game0.code != Game.WebGame_Status_Code_Loginning) {
                         currentPlatform = game0.platform;
                         currentAccount = game0.account;
-                        main.setKey(main.getKey().replace("状态：-", "状态：未运行"));
+                        main.setKey(main.getKey().replace("-", "未运行"));
                         if (spTool.getQuickLogin()) {
-                            alertTextView(main.getKey() + main.getValue() + "\n\n如需要重启，可以点击头像尝试启动账户");
+                            alertTextView("状态：" + main.getKey() + "\n战斗地图:" + main.getValue() + "\n\n如需要重启，可以点击头像尝试启动账户");
                             needLogin = true;
                         } else {
-                            alertTextView(main.getKey() + main.getValue() + "\n\n点击头像获得更多信息");
+                            alertTextView("状态：" + main.getKey() + "\n战斗地图:" + main.getValue() + "\n\n点击头像获得更多信息");
                         }
                         return;
                     }
@@ -527,11 +596,54 @@ public class GamesFragment extends BaseFragment implements FragmentWithName {
                         dzp.loadImageIntoImageview(data0, getActivity(), imageView);
                         // 这里看看怎么优化，还有ToolTime.getTimeShanghai()强制走时区
                         // Log.d(TAG, "run:计算时间 "+ToolTime.getTimeShanghai());
-                        // if (ToolTime.getTimeShanghai() - data0.lastApAddTime < 10 * 60 * 1000) {
-                        //     main.setKey("状态：运行中");
-                        //
-                        // }
-                        alertTextView(main.getKey() + main.getValue());
+                        if (ToolTime.getTimeShanghai() - data0.lastApAddTime < 10 * 60 * 1000)
+                        {
+                            main.setKey("运行中");
+                            game0.code = 100;
+                            safeRunOnUiThread(() -> {
+                                try {
+                                    imageView_state.setImageDrawable(getContext().getDrawable(R.drawable.pot_blue));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            });
+                        }
+                        safeRunOnUiThread(() -> {
+                            SpannableStringBuilder spannableStringBuilder0 = new SpannableStringBuilder();
+                            String[] status = new String[]{"状态", main.getKey()};
+                            spannableStringBuilder0.append(ToolTheme.createStyleText(ToolTheme.createSizeText(status[0] + "\n", 0.67f), Typeface.NORMAL));
+
+                            switch (game0.code) {
+                                case Game.WebGame_Status_Code_Running:
+                                    spannableStringBuilder0.append(ToolTheme.createColorText(status[1], getContext().getColor(R.color.lightgreen)));
+                                    break;
+                                case Game.WebGame_Status_Code_Loginning:
+                                    spannableStringBuilder0.append(ToolTheme.createColorText(status[1], getContext().getColor(R.color.yellow)));
+                                    break;
+                                case Game.WebGame_Status_Code_NeedCheck:
+                                    spannableStringBuilder0.append(ToolTheme.createColorText(status[1], getContext().getColor(R.color.orange)));
+                                    break;
+                                case 100:
+                                    spannableStringBuilder0.append(ToolTheme.createColorText(status[1], getContext().getColor(R.color.lightskyblue)));
+                                    break;
+                                default:
+                                    // if (game0.status.equals("-")) {
+                                    //     sTip = new SpannableString("未运行\n");
+                                    // }
+                                    spannableStringBuilder0.append(ToolTheme.createColorText(status[1], getContext().getColor(R.color.crimson)));
+                                    break;
+
+                            }
+
+                            spannableStringBuilder0.append(ToolTheme.createSizeText("\n\n", 0.5f));
+                            String[] battleMap = new String[]{"战斗地图", main.getValue()};
+                            // String[] battleMap = main.getValue().replace("\n", "").split("：");
+                            spannableStringBuilder0.append(ToolTheme.createStyleText(ToolTheme.createSizeText(battleMap[0] + "\n", 0.67f), Typeface.NORMAL));
+                            spannableStringBuilder0.append(ToolTheme.createColorText(battleMap[1], getContext().getColor(R.color.text_black)));
+                            // spannableStringBuilder0.append("\n");
+                            safeRunOnUiThread(() -> {textView.setText(spannableStringBuilder0);});
+                        });
+                        // alertTextView(main.getKey() + main.getValue());
 
                         t_gold.setText(SimpleTool.getShorterAmountDescriptionText(data0.gold));
                         t_diamond_shd.setText(SimpleTool.getShorterAmountDescriptionText(data0.diamondShard));
@@ -612,13 +724,23 @@ public class GamesFragment extends BaseFragment implements FragmentWithName {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            } else if (aa.contains("单抽获得干员")) {
+                // 解析具体物品
+                try {
+                    ddList = Arrays.asList(aa.split("获得物品：")[1].split(", "));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             // [签到] "新春限时签到活动" 签到活动·第14天签到完成~获得：芯片助剂(1), 加急许可(5)
             else if (aa.contains("签到")) {
                 try {
-                    ddList = Arrays.asList(aa.split("获得：")[1].split(", "));
+                    String[] getList = aa.split("获得：");
+                    if (getList.length > 1)
+                        ddList = Arrays.asList(aa.split("获得：")[1].split(", "));
                 } catch (Exception e) {
                     e.printStackTrace();
+                    Log.d(TAG, "parsingLogsToInfo: " + aa);
                 }
             } else if (aa.contains("收取来自")) {
                 try {
@@ -731,7 +853,7 @@ public class GamesFragment extends BaseFragment implements FragmentWithName {
 
     private void tryLogin() {
         toastInThread("尝试登陆中");
-        if (Game.TryLogin(SimpleApplication.getContext(), currentAccount, currentPlatform)) {
+        if (Game.TryLogin(getActivity(), currentAccount, currentPlatform)) {
             alertTextView("正在登陆中！");
             Timer timer = new Timer();
             long cacheTime = ToolTime.getTimeShanghai();

@@ -7,6 +7,9 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="tabTextColorCustom">@color/colorNightBackground</item>
         <item name="switchTextColorCustom">@color/colorNightBackground</item>
+        <item name="android:listDivider">@drawable/rectangle</item>
+<!--        这个是用来控制文本的-->
+<!--        <item name="colorControlActivated">?attr/colorPrimaryDark</item>-->
     </style>
 
     <style name="AppTheme.NoActionBar">

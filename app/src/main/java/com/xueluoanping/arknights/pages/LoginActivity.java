@@ -49,8 +49,8 @@ public class LoginActivity extends BaseActivity {
         // if (passwordEditText != null
         //         && userEditText != null
         //         && loginButton != null)
-        String s="<div>本APP由可露希尔工作室提供API支持。<br>注册账号和绑定QQ请点击访问<a href=\"https://arknights.host/\">可露希尔工作室网页版本</a>。</div>";
-        textView5.setText(Html.fromHtml(s,Html.FROM_HTML_MODE_COMPACT));
+        String s = "<div>本APP由可露希尔工作室提供API支持。<br>注册账号和绑定QQ请点击访问<a href=\"https://arknights.host/\">可露希尔工作室网页版本</a>。</div>";
+        textView5.setText(Html.fromHtml(s, Html.FROM_HTML_MODE_COMPACT));
         textView5.setMovementMethod(LinkMovementMethod.getInstance());
         {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -67,28 +67,31 @@ public class LoginActivity extends BaseActivity {
                     spTool.savePassword(passwordEditText.getText().toString());
 
 
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                auth.init(getApplicationContext());
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(getApplicationContext(), "登录成功", Toast.LENGTH_SHORT).show();
-                                        finish();
-                                    }
-                                });
+                    new Thread(() -> {
+                        try {
+                            runOnUiThread(() -> {
+                                Toast.makeText(LoginActivity.this, "正在登录", Toast.LENGTH_SHORT).show();
+                            loginButton.setText("登陆中");
+                            loginButton.setEnabled(false);
+                            });
 
-                            } catch (Exception e) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(getApplicationContext(), "登录失败", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                                e.printStackTrace();
-                            }
+                            auth.initWithPassword(LoginActivity.this);
+                            runOnUiThread(() -> {
+                                Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                                loginButton.setText("登录");
+                                loginButton.setEnabled(true);
+                                finish();
+
+                            });
+
+                        } catch (Exception e) {
+                            runOnUiThread(() -> {
+                                auth.cancelCheck();
+                                loginButton.setText("登录");
+                                loginButton.setEnabled(true);
+                                Toast.makeText(LoginActivity.this, "登录失败,"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+                            e.printStackTrace();
                         }
                     }).start();
                 }
@@ -96,5 +99,11 @@ public class LoginActivity extends BaseActivity {
 
 
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        auth.destroyCheck();
+        super.onDestroy();
     }
 }

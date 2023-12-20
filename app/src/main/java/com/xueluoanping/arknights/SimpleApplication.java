@@ -49,7 +49,7 @@ public class SimpleApplication extends Application {
         super.onCreate();
         context = this;
 
-        auth.initVisitorId();
+        // auth.initVisitorId();
         // 初始化地址
         int line = spTool.getLineSelect();
         if (line == 0)

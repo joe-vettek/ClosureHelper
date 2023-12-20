@@ -3,8 +3,15 @@ package com.xueluoanping.arknights.api.tool;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -40,5 +47,34 @@ public class ToolTheme {
         if (background instanceof ColorDrawable)
             color0 = ((ColorDrawable) background).getColor();
         return color0;
+    }
+
+    public static SpannableString createColorText(CharSequence text,@ColorInt int color)
+    {
+        SpannableString spannableString0 = new SpannableString(text);
+
+        ForegroundColorSpan colorSpan2 = new ForegroundColorSpan(color);
+
+        spannableString0.setSpan(colorSpan2, 0, text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        return spannableString0;
+    }
+
+    public static SpannableString createSizeText(CharSequence text,float relativeSize)
+    {
+        SpannableString spannableString0 = new SpannableString(text);
+
+        spannableString0.setSpan(new RelativeSizeSpan(relativeSize),0, text.length(),  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        return spannableString0;
+    }
+
+    public static SpannableString createStyleText(CharSequence text,int fontStyle)
+    {
+        SpannableString spannableString0 = new SpannableString(text);
+
+        spannableString0.setSpan(new StyleSpan(fontStyle),0, text.length(),  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        return spannableString0;
     }
 }

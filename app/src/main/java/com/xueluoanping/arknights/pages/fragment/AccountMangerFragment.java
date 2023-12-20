@@ -149,74 +149,71 @@ public class AccountMangerFragment extends BaseFragment implements FragmentWithN
                 } else safeRunOnUiThread(this::showNetWorkError);
             }).start();
         });
-        bt_newAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (infoList.size() < 5) {
-                    View root = LayoutInflater.from(getActivity()).inflate(R.layout.dg_addaccount, null);
-                    DialogInterface dialogInterface = new AlertDialog.Builder(getActivity())
-                            .setView(root)
-                            .setIcon(R.mipmap.npc_007_closure)
-                            .setTitle("添加一个账户")
-                            // .setMessage()
-                            .show();
-                    ((Button) root.findViewById(R.id.dg_bt_submit)).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
+        bt_newAccount.setOnClickListener(view -> {
+            if (infoList.size() < 5) {
+                View root = LayoutInflater.from(getActivity()).inflate(R.layout.dg_addaccount, null);
+                DialogInterface dialogInterface = new AlertDialog.Builder(getActivity())
+                        .setView(root)
+                        .setIcon(R.mipmap.npc_007_closure)
+                        .setTitle("添加一个账户")
+                        // .setMessage()
+                        .show();
+                ((Button) root.findViewById(R.id.dg_bt_submit)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
-                            int platform = ((Spinner) root.findViewById(R.id.dg_sp_platform)).getSelectedItemPosition();
-                            if (platform == Game.Platform_IOS) platform = Game.Platform_Android;
-                            String account = ((EditText) root.findViewById(R.id.dg_et_user)).getText().toString();
-                            String password = ((EditText) root.findViewById(R.id.dg_et_password)).getText().toString();
-                            int finalPlatform = platform;
-                            new Thread(() -> {
-                                BetterEntry<Boolean, String> ee = Game.TryAdd(account, password, finalPlatform);
-                                if (ee.getKey()) {
-                                    Game.GameInfo info = new Game.GameInfo();
-                                    info.account = account;
-                                    info.platform = finalPlatform;
-                                    info.code = Game.WebGame_Status_Code_NeedLogin;
-                                    info.status = "游戏未启动";
-                                    try {
-                                        infoList.add(info);
-                                        safeRunOnUiThread(() -> {
-                                            ad_accountList.setList(infoList);
-                                            // ad_accountList.notifyDataSetChanged();
-                                            dialogInterface.dismiss();
+                        int platform = ((Spinner) root.findViewById(R.id.dg_sp_platform)).getSelectedItemPosition();
+                        if (platform == Game.Platform_IOS) platform = Game.Platform_Android;
+                        String account = ((EditText) root.findViewById(R.id.dg_et_user)).getText().toString();
+                        String password = ((EditText) root.findViewById(R.id.dg_et_password)).getText().toString();
+                        int finalPlatform = platform;
+                        new Thread(() -> {
+                            BetterEntry<Boolean, String> ee = Game.TryAdd(account, password, finalPlatform);
+                            if (ee.getKey()) {
+                                Game.GameInfo info = new Game.GameInfo();
+                                info.account = account;
+                                info.platform = finalPlatform;
+                                info.code = Game.WebGame_Status_Code_NeedLogin;
+                                info.status = "游戏未启动";
+                                try {
+                                    infoList.add(info);
+                                    safeRunOnUiThread(() -> {
+                                        ad_accountList.setList(infoList);
+                                        // ad_accountList.notifyDataSetChanged();
+                                        dialogInterface.dismiss();
 
-                                            // 因为需要调整逻辑，所以暂时在此处插入重启
-                                            ((SimpleApplication) SimpleApplication.getContext()).restart();
-                                        });
+                                        // 因为需要调整逻辑，所以暂时在此处插入重启
+                                        ((SimpleApplication) SimpleApplication.getContext()).restart();
+                                    });
 
-                                        SimpleTool.toastInThread(getActivity(), "添加成功");
+                                    SimpleTool.toastInThread(getActivity(), "添加成功");
 
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                        SimpleTool.toastInThread(getActivity(), "添加失败");
-                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    SimpleTool.toastInThread(getActivity(), "添加失败");
+                                }
 
 
-                                } else
-                                    SimpleTool.toastInThread(getActivity(), ee.getValue());
-                            }).start();
-                        }
-                    });
-                    ((Button) root.findViewById(R.id.dg_bt_cancel)).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            dialogInterface.dismiss();
-                        }
-                    });
-                } else {
-                    new AlertDialog.Builder(getActivity())
-                            .setIcon(R.mipmap.npc_007_closure)
-                            .setTitle("警告")
-                            .setMessage("最多创建五个用户")
-                            // .setMessage()
-                            .show();
-                }
-
+                            } else
+                                SimpleTool.toastInThread(getActivity(), ee.getValue());
+                        }).start();
+                    }
+                });
+                ((Button) root.findViewById(R.id.dg_bt_cancel)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogInterface.dismiss();
+                    }
+                });
+            } else {
+                new AlertDialog.Builder(getActivity())
+                        .setIcon(R.mipmap.npc_007_closure)
+                        .setTitle("警告")
+                        .setMessage("最多创建五个用户")
+                        // .setMessage()
+                        .show();
             }
+
         });
     }
 

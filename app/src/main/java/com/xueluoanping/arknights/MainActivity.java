@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Color;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,6 +31,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.xueluoanping.arknights.api.BetterEntry;
 import com.xueluoanping.arknights.api.main.Game;
+import com.xueluoanping.arknights.api.main.auth;
 import com.xueluoanping.arknights.api.resource.Kengxxiao;
 import com.xueluoanping.arknights.api.resource.monster_siren;
 import com.xueluoanping.arknights.api.tool.ToolTime;
@@ -48,7 +48,7 @@ import com.xueluoanping.arknights.pro.SimpleTool;
 import com.xueluoanping.arknights.pro.spTool;
 import com.xueluoanping.arknights.services.SimpleService;
 
-import java.io.FileNotFoundException;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -77,7 +77,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         // Window w = getWindow();
         // w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         // 目前唯一有效的方法，让不打开左侧导航时标题栏不透明，其余时候 透明
-        setAppSpecial();
+
+
+        // auth.initGTCaptcha4Client(MainActivity.this);
+        //
+        // new Thread(() -> auth.click(new AtomicReference<>())).start();
+        // setAppSpecial();
 
         requestforPermissons();
 

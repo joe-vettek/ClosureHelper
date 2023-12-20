@@ -9,3 +9,5 @@
 /captures
 .externalNativeBuild
 .cxx
+
+app/libs/geetest_captcha_android_v1.8.2.1_20230710.aar

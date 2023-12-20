@@ -73,7 +73,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.6.1'
 
 //    Gson
-    implementation 'com.google.code.gson:gson:2.8.4'
+    implementation 'com.google.code.gson:gson:2.10'
 
     // geetest 验证API
     implementation 'com.geetest.sensebot:sensebot:4.3.8.1'
@@ -82,15 +82,13 @@ dependencies {
     implementation 'com.lxj:xpopup:1.6.7'
 
 //    https://dev.fingerprint.com/docs/native-android-integration
-    implementation "com.github.fingerprintjs:fingerprint-android:2.0.1"
-    implementation "com.fingerprint.android:pro:2.3.1"
-    constraints {
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
-            because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
-        }
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0") {
-            because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
-        }
-    }
+//    implementation "com.github.fingerprintjs:fingerprint-android:2.0.1"
+//    implementation "com.fingerprint.android:pro:2.3.1"
+
+    implementation(name: 'geetest_captcha_android_v1.8.2.1_20230710', ext: 'aar')
 
 }
+
+//packagingOptions{
+//    doNotStrip "*/*/libdeepknow-lib.so"
+//}

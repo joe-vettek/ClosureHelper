@@ -1,5 +1,6 @@
 package com.xueluoanping.arknights.api.main;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -346,9 +347,14 @@ public class Game {
         return GameJson.contains("successful");
     }
 
-    public static boolean TryLogin(Context context, String account, int platform) {
+    public static boolean TryLogin(Activity context, String account, int platform) {
         String urlStr = host.getQuickestHost() + "/Game/Login";
         JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject = new JSONObject(auth.waitCheck(context));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         try {
             jsonObject.put("account", account);
             jsonObject.put("platform", platform);

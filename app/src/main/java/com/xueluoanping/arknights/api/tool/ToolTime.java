@@ -37,6 +37,7 @@ public class ToolTime {
         String HH = String.format("%tk", date);
         String mm = String.format("%tM", date);
         return String.format("%s年%s月%s日%s时%s分", YY, MM, dd, HH, mm);
+        // return String.format("%s时%s分", HH, mm);
     }
 
     // 存在争议

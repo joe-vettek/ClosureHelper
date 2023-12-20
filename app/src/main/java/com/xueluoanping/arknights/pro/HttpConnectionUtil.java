@@ -153,7 +153,9 @@ public class HttpConnectionUtil {
             = MediaType.get("application/json; charset=utf-8");
 
     public static String post(String url, String json, Map<String, String> extraRequestProperty) throws IOException {
-        RequestBody body = RequestBody.create(JSON, json);
+        RequestBody body = json==null?
+                RequestBody.create(null,""):RequestBody.create(JSON, json);
+
         Request.Builder builder = new Request.Builder()
                 .url(url);
         if (!(extraRequestProperty == null) && !extraRequestProperty.isEmpty()) {

@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.widget.TextView;
@@ -82,16 +83,22 @@ public class UrlImageSpan extends ImageSpan {
             if (tv.getContext() instanceof Activity) {
                 if (!((Activity) tv.getContext()).isDestroyed()) {
                     SimpleTarget<Drawable> target = new SimpleTarget<Drawable>() {
+                        @SuppressLint("DiscouragedPrivateApi")
                         @Override
                         public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                             Resources resources = tv.getContext().getResources();
-                            int targetWidth = (int) (resources.getDisplayMetrics().widthPixels * 0.8);
-
+                            // int targetWidth = (int) (resources.getDisplayMetrics().widthPixels * 0.8);
+                            DisplayMetrics metrics = new DisplayMetrics();
+                            ((Activity) tv.getContext()).getWindowManager().getDefaultDisplay().getMetrics(metrics);
+                            int width = metrics.widthPixels;
+                            int height = metrics.heightPixels;
+                            int bseWidth=tv.getWidth();
+                            int targetWidth=(Math.min(width,height)-240)/5;
                             Bitmap zoom = zoom(SimpleTool.drawableToBitamp(resource), targetWidth);
 
                             BitmapDrawable b = new BitmapDrawable(resources, zoom);
 
-                            b.setBounds(0, 0, 180, 180);
+                            b.setBounds(0, 0, targetWidth, targetWidth);
                             Field mDrawable;
                             Field mDrawableRef;
                             try {

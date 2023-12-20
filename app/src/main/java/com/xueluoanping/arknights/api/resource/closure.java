@@ -15,6 +15,8 @@ import com.xueluoanping.arknights.pro.HttpConnectionUtil;
 import com.xueluoanping.arknights.pro.SimpleTool;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class closure {
     private static final String TAG = closure.class.getSimpleName();
@@ -50,8 +52,8 @@ public class closure {
         String stageTableFileName = "data/stage_table.json";
         String itemNameTableFileName = "data/item_name_table.json";
 
-        String url1 = "https://arknights.host/data/Stage.json";
-        String url2 = "https://arknights.host/data/Items.json";
+        String url1 = "http://arknights.host/data/Stage.json";
+        String url2 = "http://arknights.host/data/Items.json";
         File file;
         if (!needQuiet) {
             SimpleTool.toastInThread(context, "正在通过可露希尔网页获取临时更新！");
@@ -59,6 +61,8 @@ public class closure {
         }
         file = new File(baseUrl + stageTableFileName);
         try {
+            // Map<String, String> extraRequestProperty = new HashMap<>();
+            // extraRequestProperty.put("accept","application/json, text/plain, */*");
             String vText = HttpConnectionUtil.DownLoadTextPages(url1, null, false);
             // vText.replace("ap", "apCost");
             // vText = "{\"stages\":{" + vText + "}";
