@@ -85,7 +85,7 @@ dependencies {
 //    implementation "com.github.fingerprintjs:fingerprint-android:2.0.1"
 //    implementation "com.fingerprint.android:pro:2.3.1"
 
-    implementation(name: 'geetest_captcha_android_v1.8.2.1_20230710', ext: 'aar')
+//    implementation(name: 'geetest_captcha_android_v1.8.2.1_20230710', ext: 'aar')
 
 }
 

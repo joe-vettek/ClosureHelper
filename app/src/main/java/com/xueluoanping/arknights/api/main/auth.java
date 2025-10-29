@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
-import com.geetest.captcha.GTCaptcha4Client;
-import com.geetest.captcha.GTCaptcha4Config;
+//import com.geetest.captcha.GTCaptcha4Client;
+//import com.geetest.captcha.GTCaptcha4Config;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -30,19 +30,19 @@ public class auth {
     private static final String TAG = auth.class.getSimpleName();
 
     private static final String recaptchaKey = "6LfAKUQnAAAAAAt_QKAV5i-EdDPSL-pEtn589fQg";
-    private static GTCaptcha4Client gtCaptcha4Client_login;
+//    private static GTCaptcha4Client gtCaptcha4Client_login;
     // private static GTCaptcha4Client gtCaptcha4Client_game;
     public static void initGTCaptcha4Client(Activity context)  {
 
-        GTCaptcha4Config config = new GTCaptcha4Config.Builder()
-                // .setDebug(true) // TODO 线上务必关闭
-                .setLanguage("zh")
-                .setTimeOut(10000)
-                // .setCanceledOnTouchOutside(true)
-
-                .build();
-        gtCaptcha4Client_login = GTCaptcha4Client.getClient(context)
-                .init("8d006e952aaee56c26f4efb82717dba8", config);
+//        GTCaptcha4Config config = new GTCaptcha4Config.Builder()
+//                // .setDebug(true) // TODO 线上务必关闭
+//                .setLanguage("zh")
+//                .setTimeOut(10000)
+//                // .setCanceledOnTouchOutside(true)
+//
+//                .build();
+//        gtCaptcha4Client_login = GTCaptcha4Client.getClient(context)
+//                .init("8d006e952aaee56c26f4efb82717dba8", config);
 
         // gtCaptcha4Client_game = GTCaptcha4Client.getClient(context)
         //         .init("8d006e952aaee56c26f4efb82717dba8", config);
@@ -52,7 +52,7 @@ public class auth {
 
     public static void cancelCheck(){
         try {
-            gtCaptcha4Client_login.cancel();
+//            gtCaptcha4Client_login.cancel();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -60,7 +60,7 @@ public class auth {
 
     public static void destroyCheck(){
         try {
-            gtCaptcha4Client_login.destroy();
+//            gtCaptcha4Client_login.destroy();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -97,19 +97,19 @@ public class auth {
     }
 
     public static void click(AtomicReference<String> atomicString) {
-        gtCaptcha4Client_login.addOnSuccessListener(
-                        (status, response) -> {
-                            if (status) {
-                                // TODO 开启二次验证
-                                atomicString.set(response);
-                            } else {
-                                // TODO 用户答案验证错误
-                            }
-                            Log.d(TAG, "click: "+status+response);
-                        }).addOnFailureListener(error -> {
-
-                })
-                .verifyWithCaptcha();
+//        gtCaptcha4Client_login.addOnSuccessListener(
+//                        (status, response) -> {
+//                            if (status) {
+//                                // TODO 开启二次验证
+//                                atomicString.set(response);
+//                            } else {
+//                                // TODO 用户答案验证错误
+//                            }
+//                            Log.d(TAG, "click: "+status+response);
+//                        }).addOnFailureListener(error -> {
+//
+//                })
+//                .verifyWithCaptcha();
     }
 
     public static Map<String, String> getTokenMap(Context context) {
